@@ -6,7 +6,7 @@ var auth = require('../auth.js');
 
 router.get( '/', function( req, res ) {
 
-    res.send("");
+    res.json( {} );
 
     } );
 

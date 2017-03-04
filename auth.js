@@ -29,7 +29,7 @@ auth.validate = function ( req ) {
 
     };
 
-auth.login = function ( res, token ) {
+auth.login = function ( token, res ) {
 
     var entry = db.dread( "ATH-TOKENS" );
     var tokens = {};
@@ -71,7 +71,7 @@ auth.logout = function ( token ) {
 
             tokens.splice( i, 1 );
 
-            return; } }
+            break; } }
 
     db.dwrite( 'ATH-TOKENS', { list: tokens, count: tokens.length } );
 

@@ -6,14 +6,15 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var LoginRoute = require('./routes/login');
-var StateRoute = require('./routes/state');
-var LibraryRoute = require('./routes/library');
-var PlaylistRoute = require('./routes/playlist');
+var ResetRoute = require('./routes/reset.js');
+var LoginRoute = require('./routes/login.js');
+var StateRoute = require('./routes/state.js');
+var LibraryRoute = require('./routes/library.js');
+var PlaylistRoute = require('./routes/playlist.js');
 
 var app = express();
-var config = require('./config');
-var db = require('./db'); db.init();
+var config = require('./config.js');
+var db = require('./db.js'); db.init();
 
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use( logger('dev') );
@@ -22,6 +23,7 @@ app.use( bodyParser.urlencoded( { extended: false } ) );
 app.use( cookieParser() );
 app.use( express.static( path.join( __dirname, 'public' ) ) );
 
+app.use( '/reset', ResetRoute );
 app.use( '/login', LoginRoute );
 app.use( '/state', StateRoute );
 app.use( '/library', LibraryRoute );
@@ -45,7 +47,7 @@ app.use( function( err, req, res, next ) {
         case 404 : res.sendFile( path.join( __dirname, 'public', '404.html' ) ); break;
         case 500 : res.sendFile( path.join( __dirname, 'public', '500.html' ) ); break;
 
-        default : res.send('error'); }
+        default : res.sendFile( path.join( __dirname, 'public', '500.html' ) ); }
 
     } );
 

@@ -1,12 +1,21 @@
 var fs = require('fs');
 var db = {};
 
-db.smem = []; // [ id : STRING, obj: OBJECT ]
 db.dmem = []; // [ id : STRING, obj: OBJECT ]
+db.smem = []; // [ id : STRING, obj: OBJECT ]
 
 db.init = function ( ) {
 
-    db.smem = JSON.parse( fs.readFileSync( 'db.json', 'utf8' ) );
+    db.smem = JSON.parse( fs.readFileSync( './db.json', 'utf8' ) );
+
+    };
+
+db.reset = function ( ) {
+
+    db.dmem = [];
+    db.smem = [];
+
+    fs.writeFileSync( './db.json', JSON.stringify( db.smem ), 'utf8' );
 
     };
 
@@ -16,13 +25,13 @@ db.read = function ( mem, id ) {
 
         return { id: id, data: {}, valid: false }; }
 
-    var obj = { id: id, valid: false };
+    var obj = { id: id, data: {}, valid: false };
 
     for ( var i = 0; i < mem.length; i++ ) {
 
         if ( mem[i].id == id ) {
 
-            obj.data = mem[i].data;
+            obj.data = mem[i].obj;
             obj.valid = true;
 
             break; } }
@@ -49,18 +58,6 @@ db.write = function ( mem, id, obj ) {
 
     };
 
-db.sread = function ( id ) {
-
-    return db.read( db.smem, id );
-
-    };
-
-db.swrite = function ( id, obj ) {
-
-    db.write( db.smem, id, obj );
-
-    };
-
 db.dread = function ( id ) {
 
     return db.read( db.dmem, id );
@@ -70,6 +67,30 @@ db.dread = function ( id ) {
 db.dwrite = function ( id, obj ) {
 
     db.write( db.dmem, id, obj );
+
+    };
+
+db.sread = function ( id ) {
+
+    return db.read( db.smem, id );
+
+    };
+
+db.swrite = function ( id, obj, callback ) {
+
+    db.write( db.smem, id, obj );
+
+    fs.writeFile( './db.json', JSON.stringify( db.smem ), 'utf8', function ( err ) {
+
+        if ( err ) {
+
+            throw err; }
+
+        if ( callback !== undefined ) {
+
+            callback(); }
+
+        } );
 
     };
 
