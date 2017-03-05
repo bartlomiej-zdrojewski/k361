@@ -19,20 +19,33 @@ db.reset = function ( ) {
 
     };
 
+db.swap = function ( mem, i, j ) {
+
+    var tmp = mem[i];
+
+    mem[i] = mem[j];
+    mem[j] = tmp;
+
+    };
+
 db.read = function ( mem, id ) {
 
     if ( id === undefined || id == "" ) {
 
-        return { id: id, data: {}, valid: false }; }
+        return { id: id, obj: {}, valid: false }; }
 
-    var obj = { id: id, data: {}, valid: false };
+    var obj = { id: id, obj: {}, valid: false };
 
     for ( var i = 0; i < mem.length; i++ ) {
 
         if ( mem[i].id == id ) {
 
-            obj.data = mem[i].obj;
+            obj.obj = mem[i].obj;
             obj.valid = true;
+
+            if ( i > 0 ) {
+
+                db.swap( mem, i, i - 1 ); }
 
             break; } }
 
@@ -51,6 +64,10 @@ db.write = function ( mem, id, obj ) {
         if ( mem[i].id == id ) {
 
             mem[i].obj = obj;
+
+            if ( i > 0 ) {
+
+                db.swap( mem, i, i - 1 ); }
 
             return; } }
 

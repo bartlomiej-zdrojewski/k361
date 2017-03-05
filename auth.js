@@ -8,13 +8,13 @@ auth.validate = function ( req ) {
 
         return false; }
 
-    var entry = db.dread( 'ATH-TOKENS' );
+    var entry = db.dread('ATH-TOKENS');
 
     if ( !entry.valid ) {
 
         return false; }
 
-    var tokens = entry.data.list;
+    var tokens = entry.obj.list;
 
     for ( var i = 0; i < tokens.length; i++ ) {
 
@@ -31,12 +31,12 @@ auth.validate = function ( req ) {
 
 auth.login = function ( token, res ) {
 
-    var entry = db.dread( "ATH-TOKENS" );
+    var entry = db.dread('ATH-TOKENS');
     var tokens = {};
 
     if ( entry.valid ) {
 
-        tokens = entry.data.list; }
+        tokens = entry.obj.list; }
 
     else {
 
@@ -57,13 +57,13 @@ auth.login = function ( token, res ) {
 
 auth.logout = function ( token ) {
 
-    var entry = db.dread( 'ATH-TOKENS' );
+    var entry = db.dread('ATH-TOKENS');
 
     if ( !entry.valid ) {
 
         return; }
 
-    var tokens = entry.data.list;
+    var tokens = entry.obj.list;
 
     for ( var i = 0; i < tokens.length; i++ ) {
 

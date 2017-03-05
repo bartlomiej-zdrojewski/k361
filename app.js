@@ -8,6 +8,7 @@ var logger = require('morgan');
 
 var ResetRoute = require('./routes/reset.js');
 var LoginRoute = require('./routes/login.js');
+var LogoutRoute = require('./routes/logout.js');
 var StateRoute = require('./routes/state.js');
 var LibraryRoute = require('./routes/library.js');
 var PlaylistRoute = require('./routes/playlist.js');
@@ -19,12 +20,13 @@ var db = require('./db.js'); db.init();
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use( logger('dev') );
 app.use( bodyParser.json() );
-app.use( bodyParser.urlencoded( { extended: false } ) );
+app.use( bodyParser.urlencoded( { extended: true } ) );
 app.use( cookieParser() );
 app.use( express.static( path.join( __dirname, 'public' ) ) );
 
 app.use( '/reset', ResetRoute );
 app.use( '/login', LoginRoute );
+app.use( '/logout', LogoutRoute );
 app.use( '/state', StateRoute );
 app.use( '/library', LibraryRoute );
 app.use( '/playlist', PlaylistRoute );

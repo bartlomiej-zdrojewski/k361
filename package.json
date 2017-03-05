@@ -10,6 +10,7 @@
     "serve-favicon": "~2.3.2",
     "body-parser": "~1.16.0",
     "cookie-parser": "~1.4.3",
+    "shortid": "~2.2.6",
     "morgan": "~1.7.0",
     "debug": "~2.6.0"
   }
