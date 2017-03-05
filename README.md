@@ -49,10 +49,10 @@ apt-get install -y nodejs
 
 [CLONE]
 
-Now you can open a web browser and go to "localhost:80", or if you changed the port, to "localhost:[port]".
+Now you can open a web browser and go to `localhost:80`, or if you changed the port, to `localhost:[port]`.
 
-If you want to access the server from different device, you should open there a web browser and go to "[network].[host]:[port]".
-For example adress "192.168.101:80" represents network "192.168.1.XXX", host "101" and port "80".
+If you want to access the server from different device, you should open there a web browser and go to `[network].[host]:[port]`.
+For example adress `192.168.101:80` represents network `192.168.1.XXX`, host `101` and port `80`.
 
 #### MacOs, Ubuntu and Debian
 
