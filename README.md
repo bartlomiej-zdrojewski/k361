@@ -8,7 +8,14 @@ abc
 
 abc
 
+## Used software
+
+* [shortid](https://www.npmjs.com/package/shortid)
+* [NodeJS](https://nodejs.org/en/)
+
 ## License
+
+The MIT License
 
 Copyright 2017 Bartłomiej Zdrojewski
 
