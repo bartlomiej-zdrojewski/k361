@@ -51,8 +51,7 @@ apt-get install -y nodejs
 
 Now you can open a web browser and go to `localhost:80`, or if you changed the port, to `localhost:[port]`.
 
-If you want to access the server from different device, you should open there a web browser and go to `[network].[host]:[port]`.
-For example adress `192.168.101:80` represents network `192.168.1.XXX`, host `101` and port `80`.
+If you want to access the server from different device, you should open there a web browser and go to `[network].[host]:[port]`. For example adress `192.168.101:80` represents network `192.168.1.XXX`, host `101` and port `80`.
 
 #### MacOs, Ubuntu and Debian
 
@@ -63,7 +62,7 @@ git clone https://github.com/bartlomiej-zdrojewski/k361
 cd k361
 ```
 
-To change the default port, edit the field *port* in the file *config.js*:
+To change the default port, edit the *port* field in the *config.js* file:
 
 ```
 nano config.js
@@ -75,10 +74,10 @@ To finally run a server, type:
 node ./app.js
 ```
 
-Now you can open a web browser and go to "localhost:80", or if you changed the port, to "localhost:[port]".
+Now you can open a web browser and go to `localhost:80`, or if you changed the port, to `localhost:[port]`.
 
-If you want to access the server from different device, you should open there a web browser and go to "[network].[host]:[port]".
-For example adress "192.168.101:80" represents network "192.168.1.XXX", host "101" and port "80".
+If you want to access the server from different device, you should open there a web browser and go to `[network].[host]:[port]`.
+For example adress `192.168.101:80` represents network `192.168.1.XXX`, host `101` and port `80`. You can simply check the proper network and host values by typing `ifconfig` and looking at the *inet* field.
 
 ## Used software
 
