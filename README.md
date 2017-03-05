@@ -4,14 +4,25 @@
 
 abc
 
-## Usage
+## Uses
 
-abc
+### Right
+
+* a home audio system connected to the small server (for example Raspberry Pi)
+* a broadcasting system at school or in the office
+* any system with limited memory or storage capacity
+
+### Wrong
+
+* an online radio broadcasting system
+* any system requiring strong security or high level of performance
 
 ## Used software
 
 * [shortid](https://www.npmjs.com/package/shortid)
+* [Express](https://expressjs.com/)
 * [NodeJS](https://nodejs.org/en/)
+* [AngularJS](https://angularjs.org/)
 
 ## License
 
