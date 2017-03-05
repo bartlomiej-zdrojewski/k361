@@ -1,6 +1,6 @@
 # k361
 
-## Main idea
+## Idea
 
 abc
 
@@ -25,17 +25,33 @@ abc
 
 [Download](https://nodejs.org/en/download/current/) NodeJS package and follow the installation instructions
 
-#### Ubuntu and Debian
+#### Ubuntu
+
+Type in terminal:
 
 ```
-# Using Ubuntu
 curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
 sudo apt-get install -y nodejs
+```
 
-# Using Debian, as root
+#### Debian
+
+Type in terminal as root:
+
+```
 curl -sL https://deb.nodesource.com/setup_6.x | bash -
 apt-get install -y nodejs
 ```
+
+### k361
+
+#### Windows
+
+abc
+
+#### MacOs, Ubuntu and Debian
+
+abc
 
 ## Used software
 
