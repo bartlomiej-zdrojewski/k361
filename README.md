@@ -23,7 +23,7 @@ abc
 
 #### Windows and MacOs
 
-[Download](https://nodejs.org/en/download/current/) NodeJS package and follow the installation instructions
+[Download](https://nodejs.org/en/download/current/) NodeJS package and follow the installation instructions.
 
 #### Ubuntu
 
@@ -51,7 +51,26 @@ abc
 
 #### MacOs, Ubuntu and Debian
 
-abc
+In terminal, move to desired location and type:
+
+```
+git clone https://github.com/bartlomiej-zdrojewski/k361
+cd k361
+```
+
+To change the default port, edit the field "port" in the file "config.js":
+
+```
+nano config.js
+```
+
+To finally run a server, type:
+
+```
+node ./app.js
+```
+
+Now you can open a browser and go to "localhost:80" or if you changed the port, to "localhost:[port]".
 
 ## Used software
 
