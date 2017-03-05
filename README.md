@@ -17,6 +17,26 @@ abc
 * an online radio broadcasting system
 * any system requiring strong security or high level of performance
 
+## Installation
+
+### NodeJS
+
+#### Windows and MacOs
+
+[Download](https://nodejs.org/en/download/current/) NodeJS package and follow the installation instructions
+
+#### Ubuntu and Debian
+
+```
+# Using Ubuntu
+curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Using Debian, as root
+curl -sL https://deb.nodesource.com/setup_6.x | bash -
+apt-get install -y nodejs
+```
+
 ## Used software
 
 * [shortid](https://www.npmjs.com/package/shortid)
