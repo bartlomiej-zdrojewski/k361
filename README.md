@@ -47,9 +47,11 @@ apt-get install -y nodejs
 
 #### Windows
 
-[CLONE]
+[Download](https://github.com/bartlomiej-zdrojewski/k361/archive/master.zip) repository and unzip it in desired location.
 
-To finally run a server, open terminal (command line), go to *k361* directory location (using *cd* command) and type:
+To change the default port, open the *config.js* file in notepad and edit the *port* field.
+
+To finally run a server, open terminal (command line), go to *k361* directory location (using `cd` command) and type:
 
 ```
 node ./app.js
