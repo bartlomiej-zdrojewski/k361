@@ -49,7 +49,7 @@ apt-get install -y nodejs
 
 [CLONE]
 
-To finally run a server, open terminal (command line), go to k361 directory location (using cd command) and type:
+To finally run a server, open terminal (command line), go to *k361* directory location (using *cd* command) and type:
 
 ```
 node ./app.js
@@ -58,6 +58,8 @@ node ./app.js
 Now you can open a web browser and go to `localhost:80`, or if you changed the port, to `localhost:[port]`.
 
 If you want to access the server from different device, you should open there a web browser and go to `[network].[host]:[port]`. For example address `192.168.101:80` represents network `192.168.1.XXX`, host `101` and port `80`. You can simply check the proper network and host values by typing in terminal `ipconfig` and looking at the *IPv4 Address* field.
+
+You may consider automatically launching a server on system startup. If you are intrested, [see this tutorial](https://www.howtogeek.com/138159/how-to-enable-programs-and-custom-scripts-to-run-at-boot/).
 
 #### MacOs, Ubuntu and Debian
 
