@@ -2,7 +2,7 @@
 
 ## Idea
 
-abc
+[TODO]
 
 ## Uses
 
@@ -61,11 +61,11 @@ Now you can open a web browser and go to `localhost:80`, or if you changed the p
 
 If you want to access the server from different device, you should open there a web browser and go to `[network].[host]:[port]`. For example address `192.168.101:80` represents network `192.168.1.XXX`, host `101` and port `80`. You can simply check the proper network and host values by typing in terminal `ipconfig` and looking at the *IPv4 Address* field.
 
-You may consider automatically launching a server on system startup. If you are intrested, [see this tutorial](https://www.howtogeek.com/138159/how-to-enable-programs-and-custom-scripts-to-run-at-boot/).
+You may consider automatically launching a server on system startup. If you are intrested, [see this tutorial]().
 
 #### MacOs, Ubuntu and Debian
 
-In terminal, move to desired location and type:
+In terminal, move to desired location (using `cd` command) and type:
 
 ```
 git clone https://github.com/bartlomiej-zdrojewski/k361
@@ -88,6 +88,8 @@ Now you can open a web browser and go to `localhost:80`, or if you changed the p
 
 If you want to access the server from different device, you should open there a web browser and go to `[network].[host]:[port]`.
 For example address `192.168.101:80` represents network `192.168.1.XXX`, host `101` and port `80`. You can simply check the proper network and host values by typing in terminal `ifconfig` and looking at the *inet* field.
+
+You may consider automatically launching a server on system startup. If you are intrested, see this tutorial. [TODO]
 
 ## Used software
 
