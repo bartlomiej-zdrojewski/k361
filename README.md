@@ -65,7 +65,7 @@ You may consider automatically launching a server on system startup. If you are 
 
 #### MacOs, Ubuntu and Debian
 
-In terminal, move to desired location (using `cd` command) and type:
+In terminal, go to desired location (using `cd` command) and type:
 
 ```
 git clone https://github.com/bartlomiej-zdrojewski/k361
