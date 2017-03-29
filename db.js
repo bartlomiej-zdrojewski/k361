@@ -30,7 +30,7 @@ db.swap = function ( mem, i, j ) {
 
 db.read = function ( mem, id ) {
 
-    if ( id === undefined || id == "" ) {
+    if ( id === undefined || id === '' ) {
 
         return { id: id, obj: {}, valid: false }; }
 
@@ -38,7 +38,7 @@ db.read = function ( mem, id ) {
 
     for ( var i = 0; i < mem.length; i++ ) {
 
-        if ( mem[i].id == id ) {
+        if ( mem[i].id === id ) {
 
             obj.obj = mem[i].obj;
             obj.valid = true;
@@ -55,13 +55,13 @@ db.read = function ( mem, id ) {
 
 db.write = function ( mem, id, obj ) {
 
-    if ( id === undefined || id == "" ) {
+    if ( id === undefined || id === '' ) {
 
         return; }
 
     for ( var i = 0; i < mem.length; i++ ) {
 
-        if ( mem[i].id == id ) {
+        if ( mem[i].id === id ) {
 
             mem[i].obj = obj;
 

@@ -18,7 +18,7 @@ auth.validate = function ( req ) {
 
     for ( var i = 0; i < tokens.length; i++ ) {
 
-        if ( tokens[i].hash == req.cookies.token ) {
+        if ( tokens[i].hash === req.cookies.token ) {
 
             clearTimeout( tokens[i].timeout );
             tokens[i].timeout = setTimeout( function ( ) { auth.logout(req.cookies.token) }, config.token_expiration_time );
@@ -44,7 +44,7 @@ auth.login = function ( token, res ) {
 
     for ( var i = 0; i < tokens.length; i++ ) {
 
-        if ( tokens[i].hash == token ) {
+        if ( tokens[i].hash === token ) {
 
             return; } }
 
@@ -67,7 +67,7 @@ auth.logout = function ( token ) {
 
     for ( var i = 0; i < tokens.length; i++ ) {
 
-        if ( tokens[i].hash == token ) {
+        if ( tokens[i].hash === token ) {
 
             tokens.splice( i, 1 );
 

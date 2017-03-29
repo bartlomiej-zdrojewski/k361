@@ -12,10 +12,10 @@ router.get( '/', function( req, res ) {
 
     // delete library
     db.reset();
-    db.swrite( "ATH-PASSWORD", { data: "", time: Date.now() } );
+    db.swrite( 'ATH-PASSWORD', { data: '', time: Date.now() } );
 
     res.send('Done');
 
-} );
+    } );
 
 module.exports = router;
