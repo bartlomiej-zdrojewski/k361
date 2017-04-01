@@ -8,7 +8,7 @@ router.get( '/', function( req, res ) {
 
     if ( !auth.validate(req) ) {
 
-        res.status(401).send('Unauthorized'); }
+        res.status(401).send('Unauthorized'); return; }
 
     // ...
 

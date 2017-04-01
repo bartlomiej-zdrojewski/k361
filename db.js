@@ -75,6 +75,22 @@ db.write = function ( mem, id, obj ) {
 
     };
 
+db.remove = function ( mem, id ) {
+
+    if ( id === undefined || id === '' ) {
+
+        return; }
+
+    for ( var i = 0; i < mem.length; i++ ) {
+
+        if ( mem[i].id === id ) {
+
+            mem.splice( i, 1 );
+
+            break; } }
+
+    };
+
 db.dread = function ( id ) {
 
     return db.read( db.dmem, id );
@@ -87,6 +103,12 @@ db.dwrite = function ( id, obj ) {
 
     };
 
+db.dremove = function ( id ) {
+
+    db.remove( db.dmem, id );
+
+    };
+
 db.sread = function ( id ) {
 
     return db.read( db.smem, id );
@@ -96,6 +118,24 @@ db.sread = function ( id ) {
 db.swrite = function ( id, obj, callback ) {
 
     db.write( db.smem, id, obj );
+
+    fs.writeFile( './db.json', JSON.stringify( db.smem ), 'utf8', function ( err ) {
+
+        if ( err ) {
+
+            throw err; }
+
+        if ( callback !== undefined ) {
+
+            callback(); }
+
+        } );
+
+    };
+
+db.sremove = function ( id, callback ) {
+
+    db.remove( db.smem, id );
 
     fs.writeFile( './db.json', JSON.stringify( db.smem ), 'utf8', function ( err ) {
 
