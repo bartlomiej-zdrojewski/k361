@@ -43,6 +43,16 @@ curl -sL https://deb.nodesource.com/setup_6.x | bash -
 apt-get install -y nodejs
 ```
 
+### FFmpeg
+
+#### Windows
+
+[TODO]
+
+#### MacOs, Ubuntu and Debian
+
+[TODO]
+
 ### k361
 
 #### Windows
