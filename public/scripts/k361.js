@@ -95,31 +95,66 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
         };
 
-    $scope.CreateTrack = function ( ) {
+    $scope.CreateTrack = function ( track ) {
 
         // ...
 
         };
 
-    $scope.EditTrack = function ( ) {
+    $scope.EditTrack = function ( track ) {
 
         // ...
 
         };
 
-    $scope.RemoveTrack = function ( ) {
+    $scope.RemoveTrack = function ( track ) {
 
         // ...
 
         };
 
-    $scope.PlayNow = function ( ) {
+    $scope.PlayNow = function ( track ) {
+
+        $http.post( '/playlist/play', {
+
+            id: track
+
+            } ).then(
+
+                function ( response ) {
+
+                    // ...
+
+                    },
+
+                function ( response ) {
+
+                    console.log( "ERROR #" + subresponse.status + " IN PLAY_NOW: " + subresponse.data );
+
+                    $mdToast.show(
+
+                        $mdToast.simple()
+                            .textContent( 'Podczas odtwarzania ścieżki wystąpił błąd! Spróbuj ponownie.' )
+                            .position( 'bottom right' )
+                            .hideDelay( 5000 )
+
+                        );
+
+                    }
+
+                );
+
+        };
+
+    $scope.StopNow = function ( track ) {
 
         // ...
 
         };
 
-    $scope.AddToPlaylist = function ( ) {
+    $scope.AddToPlaylist = function ( track ) {
+
+        // ...
 
         };
 

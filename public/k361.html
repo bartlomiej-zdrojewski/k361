@@ -93,6 +93,11 @@
                         <md-progress-circular md-mode="indeterminate" md-diameter="{{ !MobileMode && '80' || '60' }}"></md-progress-circular>
                     </div>
 
+                    <md-button ng-class="{ visible: ( ActiveTab==2 && !MobileMode ) }" class="on-top md-primary md-raised md-fab md-fab-bottom-right" aria-label="Stwórz ścieżkę" ng-click="CreateTrack(track.id)">
+                        <md-icon md-svg-icon="images/library-create.svg"></md-icon>
+                        <md-tooltip md-direction="left">Stwórz ścieżkę</md-tooltip>
+                    </md-button>
+
                     <md-tabs class="hide-tab-bar" ng-show="ContentReady" md-dynamic-height>
 
                         <md-tab md-active="ActiveTab==1" label="Playlist">
@@ -118,20 +123,20 @@
 
                                     <md-list flex>
 
-                                        <md-list-item md-ink-ripple class="md-3-line" ng-repeat="track in Tracks">
+                                        <md-list-item class="md-3-line" ng-repeat="track in Tracks">
 
                                             <div class="md-list-item-text" layout="column">
                                                 <h3>{{track.title}}</h3>
-                                                <h4>{{track.author}} - {{track.album}}</h4>
-                                                <p>{{ TimeToText(track.length) }}</p>
+                                                <h4 style="margin: 4px 0 3px;">{{track.author}} - {{track.album}}</h4>
+                                                <p style="font-size:12px;">{{ TimeToText(track.length) }}</p>
                                             </div>
 
                                             <md-icon md-svg-icon="images/library-add-to-playlist.svg" class="md-secondary" aria-label="Dodaj ścieżkę do playlisty" ng-click="AddToPlaylist(track.id)">
                                                 <md-tooltip ng-style="{ 'display' : !MobileMode && 'initial' || 'none' }" md-direction="bottom">Dodaj ścieżkę do playlisty</md-tooltip>
                                             </md-icon>
 
-                                            <md-icon md-svg-icon="images/library-play-now.svg" class="md-secondary" aria-label="Odtwórz ścieżkę teraz" ng-click="PlayNow(track.id)">
-                                                <md-tooltip ng-style="{ 'display' : !MobileMode && 'initial' || 'none' }" md-direction="bottom">Odtwórz ścieżkę teraz</md-tooltip>
+                                            <md-icon md-svg-icon="images/library-play-now.svg" class="md-secondary" aria-label="Odtwórz ścieżkę" ng-click="PlayNow(track.id)">
+                                                <md-tooltip ng-style="{ 'display' : !MobileMode && 'initial' || 'none' }" md-direction="bottom">Odtwórz ścieżkę</md-tooltip>
                                             </md-icon>
 
                                             <md-icon md-svg-icon="images/library-edit.svg" class="md-secondary" aria-label="Edytuj ścieżkę" ng-show="!MobileMode" ng-click="EditTrack(track.id)">

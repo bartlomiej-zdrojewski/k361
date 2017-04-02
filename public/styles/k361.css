@@ -48,6 +48,20 @@ html {
 
     }
 
+.on-top {
+
+    transform: scale(0);
+    transition: transform 0.3s ease-in;
+
+    }
+
+.on-top.visible {
+
+    transform: scale(1);
+    transition: transform 0.3s ease-in;
+
+    }
+
 #Library .search {
 
     height: 40px;

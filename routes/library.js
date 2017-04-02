@@ -217,7 +217,7 @@ router.post( '/download', function( req, res ) { // { service: STRING, code: STR
                         Track.title = Track.id;
                         Track.album = 'Youtube';
                         Track.author = 'Unknown';
-                        Track.length = 600;
+                        Track.length = 300;
                         Track.end = Track.length;
 
                         Catalog.obj.catalog.push( {

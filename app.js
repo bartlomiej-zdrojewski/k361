@@ -17,6 +17,9 @@ var app = express();
 var config = require('./config.js');
 var db = require('./db.js'); db.init();
 
+app.locals.AudiosStream = 0;
+app.locals.AudioPlaying = 0;
+
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use( logger('dev') );
 app.use( bodyParser.json() );

@@ -13,7 +13,8 @@
     "morgan": "~1.7.0",
     "serve-favicon": "~2.3.2",
     "shortid": "~2.2.6",
+    "youtube-info": "~1.1.1",
     "youtube-mp3-downloader": "^0.4.4",
-    "youtube-info": "~1.1.1"
+    "play-sound": "^1.1.1"
   }
 }
