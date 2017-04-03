@@ -32,9 +32,9 @@ router.get( '/', function( req, res ) {
 
             if ( Track.valid ) {
 
-                var Path = Track.obj.path;
+                if ( fs.existsSync( 'tracks/' + Track.obj.path ) ) {
 
-                setTimeout( function ( ) { fs.unlink( 'tracks/' + Path ) }, 250 ); } } }
+                    setTimeout( function ( ) { fs.unlink( 'tracks/' + Track.obj.path ) }, 250 ); } } } }
 
     db.reset();
     req.app.locals.PlaylistManager( req.app, db );

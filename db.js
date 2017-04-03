@@ -6,16 +6,16 @@ db.smem = []; // [ id : STRING, obj: OBJECT ]
 
 db.init = function ( ) {
 
-    var Data = fs.readFileSync( './db.json', 'utf8' );
+    try {
 
-    if ( !Data ) {
+        db.smem = JSON.parse( fs.readFileSync( './db.json', 'utf8' ) ); }
+
+    catch ( err ) {
+
+        console.log( 'While initiating the database error occurred: ' + err );
 
         db.reset();
-        db.init();
-
-        return; }
-
-    db.smem = JSON.parse( Data );
+        db.init(); }
 
     };
 

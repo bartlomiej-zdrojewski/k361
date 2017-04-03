@@ -396,7 +396,10 @@ router.get( '/clean', function( req, res ) {
 
             if ( Track.obj.state === 'ERROR' || Track.obj.state === 'REMOVED' ) {
 
-                fs.unlink( 'tracks/' + Track.obj.path );
+                if ( fs.existsSync( 'tracks/' + Track.obj.path ) ) {
+
+                    fs.unlink( 'tracks/' + Track.obj.path ); }
+
                 db.sremove( Track.obj.id );
 
                 Catalog.obj.tracks.splice( i, 1 ); } }
