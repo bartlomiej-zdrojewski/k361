@@ -12,9 +12,19 @@ router.get( '/', function( req, res ) {
 
         res.status(401).send('Unauthorized'); return; }
 
-    // ...
+    var Audio = db.dread( 'PLT-AUDIO' );
 
-    res.json( {} );
+    if ( !Audio.valid ) {
+
+        console.log('Audio stream is inaccessible!'); return; }
+
+    var Schedule = db.sread( 'PLT-SCHEDULE' );
+
+    if ( !Schedule.valid ) {
+
+        console.log('Playlist schedule is inaccessible!'); return; }
+
+    res.json( { audio: { playing: Audio.obj.playing, track: Audio.obj.track }, schedule: Schedule.obj.schedule } );
 
     } );
 
@@ -42,36 +52,82 @@ router.post( '/play', function( req, res ) {
 
         res.status(400).send('Track is not ready.'); return; }
 
-    if ( req.app.locals.AudioPlaying ) {
+    var Audio = db.dread( 'PLT-AUDIO' );
 
-        req.app.locals.AudioStream.kill(); }
+    if ( !Audio.valid ) {
 
-    req.app.locals.AudioStream = player.play( 'tracks/' + Track.obj.path, { mplayer: [ '-ss', Track.obj.begin, '-really-quiet' ] }, function( err ) {
+        res.status(400).send('Audio stream is inaccessible!'); return; }
+
+    if ( Audio.obj.playing ) {
+
+        Audio.obj.stream.kill(); }
+
+    Audio.obj.stream = player.play( 'tracks/' + Track.obj.path, { mplayer: [ '-ss', Track.obj.begin, '-really-quiet' ] }, function( err ) {
 
         if ( err && !err.killed ) {
 
-            req.app.locals.AudioPlaying = false;
+            var Audio = db.dread( 'PLT-AUDIO' );
+
+            if ( !Audio.valid ) {
+
+                Audio.obj.playing = false;
+                Audio.obj.track = '';
+
+                db.dwrite( 'PLT-AUDIO', Audio.obj ); }
 
             throw err; }
 
         } );
 
-    req.app.locals.AudioPlaying = true;
+    Audio.obj.playing = true;
+    Audio.obj.track = Track.obj.id;
+
+    db.dwrite( 'PLT-AUDIO', Audio.obj );
+    clearTimeout( req.app.locals.PlaylistManagerTimeout );
+
+    req.app.locals.PlaylistManagerTimeout = setTimeout( function ( ) {
+
+        var Audio = db.dread( 'PLT-AUDIO' );
+
+        if ( Audio.valid ) {
+
+            Audio.obj.stream.kill();
+
+            Audio.obj.playing = false;
+            Audio.obj.track = '';
+
+            db.dwrite( 'PLT-AUDIO', Audio.obj ); }
+
+        req.app.locals.PlaylistManager( req.app, db );
+
+        }, ( Track.obj.end - Track.obj.begin ) * 1000 );
 
     res.send('Done');
 
     } );
 
-router.get( '/stop', function( req, res ) {
+router.post( '/stop', function( req, res ) {
 
     if ( !auth.validate(req) ) {
 
         res.status(401).send('Unauthorized'); return; }
 
-    if ( req.app.locals.AudioPlaying ) {
+    var Audio = db.dread( 'PLT-AUDIO' );
 
-        req.app.locals.AudioStream.kill();
-        req.app.locals.AudioPlaying = false; }
+    if ( !Audio.valid ) {
+
+        res.status(400).send('Audio stream is inaccessible!'); return; }
+
+    if ( Audio.obj.playing ) {
+
+        Audio.obj.stream.kill();
+
+        Audio.obj.playing = false;
+        Audio.obj.track = '';
+
+        db.dwrite( 'PLT-AUDIO', Audio.obj ); }
+
+    req.app.locals.PlaylistManager( req.app, db );
 
     res.send('Done');
 

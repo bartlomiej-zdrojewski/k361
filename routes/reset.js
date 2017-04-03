@@ -12,6 +12,16 @@ router.get( '/', function( req, res ) {
 
         res.status(401).send('Unauthorized'); return; }
 
+    console.log('Resetting entire server');
+
+    var Audio = db.dread( 'PLT-AUDIO' );
+
+    if ( Audio.valid ) {
+
+        if ( Audio.obj.playing ) {
+
+            Audio.obj.stream.kill(); } }
+
     var Catalog = db.sread('LIB-CATALOG');
 
     if ( Catalog.valid ) {
@@ -22,11 +32,12 @@ router.get( '/', function( req, res ) {
 
             if ( Track.valid ) {
 
-                fs.unlink( '../tracks/' + Track.obj.path ); } } }
+                var Path = Track.obj.path;
+
+                setTimeout( function ( ) { fs.unlink( 'tracks/' + Path ) }, 250 ); } } }
 
     db.reset();
-    db.swrite( 'ATH-PASSWORD', { data: '', time: Date.now() } );
-    db.swrite( 'LIB-CATALOG', { catalog: [], tracks: [] } );
+    req.app.locals.PlaylistManager( req.app, db );
 
     res.send('Done');
 

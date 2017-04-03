@@ -6,14 +6,29 @@ db.smem = []; // [ id : STRING, obj: OBJECT ]
 
 db.init = function ( ) {
 
-    db.smem = JSON.parse( fs.readFileSync( './db.json', 'utf8' ) );
+    var Data = fs.readFileSync( './db.json', 'utf8' );
+
+    if ( !Data ) {
+
+        db.reset();
+        db.init();
+
+        return; }
+
+    db.smem = JSON.parse( Data );
 
     };
 
 db.reset = function ( ) {
 
     db.dmem = [];
-    db.smem = [];
+    db.smem = [
+
+        { id: "ATH-PASSWORD", obj: { data: "", time: 0 } },
+        { id: "LIB-CATALOG", obj: { catalog: [], tracks: [] } }
+        // TODO: SETTINGS
+
+        ];
 
     fs.writeFileSync( './db.json', JSON.stringify( db.smem ), 'utf8' );
 

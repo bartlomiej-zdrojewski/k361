@@ -26,7 +26,7 @@
 
                     <div class="md-toolbar-tools">
 
-                        <h2 flex md-truncate>Nawigacja</h2>
+                        <h2 flex md-truncate>Nawigacja</h2> <!-- EN: Navigation -->
 
                     </div>
 
@@ -70,14 +70,14 @@
 
                 <md-toolbar class="md-hue-2">
 
-                    <div class="md-toolbar-tools">
+                    <div class="md-toolbar-tools" flex>
 
                         <md-button class="md-icon-button" aria-label="Menu" ng-disabled="!MobileMode" ng-click="OpenMenu()">
                             <md-icon md-svg-icon="images/menu.svg" ng-show="MobileMode"></md-icon>
                             <md-icon md-svg-icon="images/menu-disabled.svg" ng-show="!MobileMode"></md-icon>
                         </md-button>
 
-                        <h2 flex md-truncate>k361 - gotowy do zabawy</h2>
+                        <h2 style="white-space:nowrap;text-overflow:ellipsis;overflow:hidden;" flex>k361 - {{ToolbarText}}</h2>
 
                         <md-button class="md-icon-button" aria-label="Github" ng-href="https://github.com/bartlomiej-zdrojewski/k361" target="_blank">
                             <md-icon md-svg-icon="images/github.svg"></md-icon>
@@ -93,9 +93,9 @@
                         <md-progress-circular md-mode="indeterminate" md-diameter="{{ !MobileMode && '80' || '60' }}"></md-progress-circular>
                     </div>
 
-                    <md-button ng-class="{ visible: ( ActiveTab==2 && !MobileMode ) }" class="on-top md-primary md-raised md-fab md-fab-bottom-right" aria-label="Stwórz ścieżkę" ng-click="CreateTrack(track.id)">
+                    <md-button style="bottom:30px;right:30px;position:fixed;" ng-class="{ visible: ( ActiveTab==2 && !MobileMode ) }" class="on-top md-primary md-raised md-fab md-fab-bottom-right" aria-label="Stwórz ścieżkę" ng-click="CreateTrack($event)"> <!-- EN: Create track -->
                         <md-icon md-svg-icon="images/library-create.svg"></md-icon>
-                        <md-tooltip md-direction="left">Stwórz ścieżkę</md-tooltip>
+                        <md-tooltip md-direction="left">Stwórz ścieżkę</md-tooltip> <!-- EN: Create track -->
                     </md-button>
 
                     <md-tabs class="hide-tab-bar" ng-show="ContentReady" md-dynamic-height>
@@ -131,20 +131,20 @@
                                                 <p style="font-size:12px;">{{ TimeToText(track.length) }}</p>
                                             </div>
 
-                                            <md-icon md-svg-icon="images/library-add-to-playlist.svg" class="md-secondary" aria-label="Dodaj ścieżkę do playlisty" ng-click="AddToPlaylist(track.id)">
-                                                <md-tooltip ng-style="{ 'display' : !MobileMode && 'initial' || 'none' }" md-direction="bottom">Dodaj ścieżkę do playlisty</md-tooltip>
+                                            <md-icon md-svg-icon="images/library-add-to-playlist.svg" class="md-secondary" aria-label="Dodaj ścieżkę do playlisty" ng-click="AddToPlaylist(track.id)"> <!-- EN: Add track to playlist -->
+                                                <md-tooltip ng-style="{ 'display' : !MobileMode && 'initial' || 'none' }" md-direction="bottom">Dodaj ścieżkę do playlisty</md-tooltip> <!-- EN: Add track to playlist -->
                                             </md-icon>
 
-                                            <md-icon md-svg-icon="images/library-play-now.svg" class="md-secondary" aria-label="Odtwórz ścieżkę" ng-click="PlayNow(track.id)">
-                                                <md-tooltip ng-style="{ 'display' : !MobileMode && 'initial' || 'none' }" md-direction="bottom">Odtwórz ścieżkę</md-tooltip>
+                                            <md-icon md-svg-icon="images/library-{{ ( Audio.playing && Audio.track == track.id ) && 'stop-now' || 'play-now' }}.svg" class="md-secondary" aria-label="Odtwórz lub zatrzymaj odtwarzanie ścieżki" ng-click="ToggleNow(track.id)"> <!-- EN: Play or stop playing track -->
+                                                <md-tooltip ng-style="{ 'display' : !MobileMode && 'initial' || 'none' }" md-direction="bottom">{{ ( Audio.playing && Audio.track == track.id ) && 'Zatrzymaj odtwarzanie ścieżki' || 'Odtwórz ścieżkę' }}</md-tooltip> <!-- EN: Play track / Stop playing track -->
                                             </md-icon>
 
-                                            <md-icon md-svg-icon="images/library-edit.svg" class="md-secondary" aria-label="Edytuj ścieżkę" ng-show="!MobileMode" ng-click="EditTrack(track.id)">
-                                                <md-tooltip ng-style="{ 'display' : !MobileMode && 'initial' || 'none' }" md-direction="bottom">Edytuj ścieżkę</md-tooltip>
+                                            <md-icon md-svg-icon="images/library-edit.svg" class="md-secondary" aria-label="Edytuj ścieżkę" ng-show="!MobileMode" ng-click="EditTrack(track.id)"> <!-- EN: Edit track -->
+                                                <md-tooltip ng-style="{ 'display' : !MobileMode && 'initial' || 'none' }" md-direction="bottom">Edytuj ścieżkę</md-tooltip> <!-- EN: Edit track -->
                                             </md-icon>
 
-                                            <md-icon md-svg-icon="images/library-remove.svg" class="md-secondary" aria-label="Usuń ścieżkę" ng-show="!MobileMode" ng-click="RemoveTrack(track.id)">
-                                                <md-tooltip ng-style="{ 'display' : !MobileMode && 'initial' || 'none' }" md-direction="bottom">Usuń ścieżkę</md-tooltip>
+                                            <md-icon md-svg-icon="images/library-remove.svg" class="md-secondary" aria-label="Usuń ścieżkę" ng-show="!MobileMode" ng-click="RemoveTrack(track.id)"> <!-- EN: Remove track -->
+                                                <md-tooltip ng-style="{ 'display' : !MobileMode && 'initial' || 'none' }" md-direction="bottom">Usuń ścieżkę</md-tooltip> <!-- EN: Remove track -->
                                             </md-icon>
 
                                             <md-divider ng-if="!last"></md-divider>

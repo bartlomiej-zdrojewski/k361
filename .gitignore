@@ -1,7 +1,5 @@
 # Module specific files
-db.json
 tracks/*
-!tracks/default.mp3
 
 # IDE specific files
 .idea/

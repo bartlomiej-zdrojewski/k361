@@ -262,7 +262,7 @@ router.post( '/download', function( req, res ) { // { service: STRING, code: STR
 
                     } );
 
-                console.log( 'Track ' + Track.id + ' has been downloaded. It\'s now ready to use.' );
+                console.log( 'Track #' + Track.id + ' has been downloaded. It\'s now ready to use.' );
 
                 } );
 
@@ -273,7 +273,7 @@ router.post( '/download', function( req, res ) { // { service: STRING, code: STR
 
                 db.swrite( 'LIB-TRACK-' + Track.id, Track );
 
-                console.log( 'While downloading track ' + Track.id + ' error occurred: ' + error ); } );
+                console.log( 'While downloading track #' + Track.id + ' error occurred: ' + error ); } );
 
             File.on( 'progress', function( progress ) {
 
@@ -396,7 +396,7 @@ router.get( '/clean', function( req, res ) {
 
             if ( Track.obj.state === 'ERROR' || Track.obj.state === 'REMOVED' ) {
 
-                fs.unlink( '../tracks/' + Track.obj.path );
+                fs.unlink( 'tracks/' + Track.obj.path );
                 db.sremove( Track.obj.id );
 
                 Catalog.obj.tracks.splice( i, 1 ); } }

@@ -1,12 +1,18 @@
-angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).controller( 'Controller', [ '$scope', '$http', '$window', '$mdSidenav', '$mdToast', '$mdMedia', function ( $scope, $http, $window, $mdSidenav, $mdToast, $mdMedia ) {
+// TODO: TRANSLATE
+
+angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).controller( 'Controller', [ '$scope', '$http', '$window', '$interval', '$mdSidenav', '$mdDialog', '$mdToast', '$mdMedia', function ( $scope, $http, $window, $interval, $mdSidenav, $mdDialog, $mdToast, $mdMedia ) {
 
     $scope.ActiveTab = 2;
     $scope.ContentReady = false;
     $scope.MobileMode = !$mdMedia('gt-sm');
 
-    $scope.SearchText = "";
+    $scope.SearchText = '';
+    $scope.ToolbarText = 'Życie jest lepsze z muzyką!'; // EN: Life's better with music!
 
+    $scope.Audio = {};
     $scope.Catalog = [];
+    $scope.Downloading = [];
+    $scope.Schedule = [];
     $scope.Tracks = [];
 
     $scope.TimeToText = function ( time ) {
@@ -95,9 +101,92 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
         };
 
-    $scope.CreateTrack = function ( track ) {
+    $scope.CreateTrack = function ( event ) {
 
-        // ...
+        $mdDialog.show( {
+
+            controller: CreateTrackController,
+            templateUrl: 'k361-create-track.html',
+            parent: angular.element( document.body ),
+            targetEvent: event,
+            clickOutsideToClose: true,
+            fullscreen: true
+
+            } ).then(
+
+                function ( response ) {
+
+                    if ( response.service == 'YOUTUBE' ) {
+
+                        var Code = response.link.match( /(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)(?:\/watch\?v=|\/)([^\s&]+)/ );
+
+                        if( Code != null ) {
+
+                            $http.post( '/library/download', {
+
+                                service: 'YOUTUBE',
+                                code: Code[1]
+
+                                } ).then(
+
+                                function ( response ) {
+
+                                    $scope.Downloading.push( response.data );
+
+                                    $mdToast.show(
+
+                                        $mdToast.simple()
+                                            .textContent( 'Ścieżka #' + response.data + " zostanie niedługo pobrana!" )
+                                            .position( 'bottom right' )
+                                            .hideDelay( 3000 )
+
+                                        );
+
+                                    },
+
+                                function ( response ) {
+
+                                    console.log( "ERROR #" + response.status + " IN CREATE_TRACK: " + response.data );
+
+                                    $mdToast.show(
+
+                                        $mdToast.simple()
+                                            .textContent( 'Podczas tworzenia ścieżki wystąpił błąd! Spróbuj ponownie.' )
+                                            .position( 'bottom right' )
+                                            .hideDelay( 5000 )
+
+                                        );
+
+                                    }
+
+                                );
+
+                            }
+
+                        else {
+
+                            console.log( "ERROR IN CREATE_TRACK: YOUTUBE LINK DOES NOT MATCH THE PATTERN" );
+
+                            $mdToast.show(
+
+                                $mdToast.simple()
+                                    .textContent( 'Podczas tworzenia ścieżki wystąpił błąd! Spróbuj ponownie.' )
+                                    .position( 'bottom right' )
+                                    .hideDelay( 5000 )
+
+                                );
+
+                            }
+
+                        }
+
+                    },
+
+                function ( response ) {
+
+                    // NOTHING
+
+                    } );
 
         };
 
@@ -113,6 +202,18 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
         };
 
+    $scope.ToggleNow = function ( track ) {
+
+        if ( $scope.Audio.playing && $scope.Audio.track == track ) {
+
+            $scope.StopNow( track ); }
+
+        else {
+
+            $scope.PlayNow( track ); }
+
+        };
+
     $scope.PlayNow = function ( track ) {
 
         $http.post( '/playlist/play', {
@@ -123,13 +224,16 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                 function ( response ) {
 
-                    // ...
+                    $scope.Audio.playing = true;
+                    $scope.Audio.track = track;
+
+                    $scope.Synchronize();
 
                     },
 
                 function ( response ) {
 
-                    console.log( "ERROR #" + subresponse.status + " IN PLAY_NOW: " + subresponse.data );
+                    console.log( "ERROR #" + response.status + " IN PLAY_NOW: " + response.data );
 
                     $mdToast.show(
 
@@ -148,7 +252,37 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
     $scope.StopNow = function ( track ) {
 
-        // ...
+        $http.post( '/playlist/stop', {
+
+            // NOTHING
+
+            } ).then(
+
+                function ( response ) {
+
+                    $scope.Audio.playing = false;
+                    $scope.Audio.track = '';
+
+                    $scope.Synchronize();
+
+                    },
+
+                function ( response ) {
+
+                    console.log( "ERROR #" + response.status + " IN STOP_NOW: " + response.data );
+
+                    $mdToast.show(
+
+                        $mdToast.simple()
+                            .textContent( 'Podczas zatzymywania odtwarzania ścieżki wystąpił błąd! Spróbuj ponownie.' )
+                            .position( 'bottom right' )
+                            .hideDelay( 5000 )
+
+                    );
+
+                }
+
+            );
 
         };
 
@@ -212,10 +346,126 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
         };
 
+    $scope.Synchronize = function ( ) {
+
+        $scope.ToolbarText = 'Życie jest lepsze z muzyką!'; // EN: Life's better with music!
+
+        if ( $scope.Audio.playing ) {
+
+            for ( var i = 0; i < $scope.Catalog.length; i++ ) {
+
+                if ( $scope.Catalog[i].id == $scope.Audio.track ) {
+
+                    $scope.ToolbarText = $scope.Catalog[i].title + ' | ' + $scope.Catalog[i].author + ' - ' + $scope.Catalog[i].album;
+
+                    break; } } }
+
+        };
+
+    $scope.SynchronizeWithServer = function ( ) {
+
+        $http.get( '/state/synchronize' ).then(
+
+            function ( response ) {
+
+                if ( response.data.update.catalog ) {
+
+                    $scope.Catalog = response.data.catalog;
+
+                    $scope.SearchInCatalog(); }
+
+                if ( response.data.update.schedule ) {
+
+                    $scope.Schedule = response.data.schedule;
+
+                    // TODO: UPDATE PLAYLIST
+
+                    }
+
+                // TODO: UPDATE SETTINGS
+
+                $scope.Audio = response.data.audio;
+
+                $scope.Synchronize();
+
+                },
+
+            function ( response ) {
+
+                console.log( "ERROR #" + response.status + " IN c: " + response.data );
+
+                }
+
+            );
+
+        for ( var i = 0; i < $scope.Downloading.length; i++ ) {
+
+            $http.get( '/library/track?id=' + $scope.Downloading[i] ).then(
+
+                function ( response ) {
+
+                    if ( response.data.state == 'ERROR' ) {
+
+                        $mdToast.show(
+
+                            $mdToast.simple()
+                                .textContent( 'Podczas pobierania ścieżki #' + response.data.id + ' wystąpił błąd! Spróbuj ponownie.' )
+                                .position( 'bottom right' )
+                                .hideDelay( 5000 )
+
+                            );
+
+                        for ( var i = 0; i < $scope.Downloading.length; i++ ) {
+
+                            if ( $scope.Downloading[i] == response.data.id ) {
+
+                                $scope.Downloading.splice( i, 1 );
+
+                                break; } } }
+
+                    else if ( response.data.state == 'READY' ) {
+
+                        var Title = response.data.title;
+
+                        if ( Title.length > 40 ) {
+
+                            Title = Title.substr( 0, 37 ) + '...'; }
+
+                        $mdToast.show(
+
+                            $mdToast.simple()
+                                .textContent( 'Ścieżka \'' + Title + '\' została pobrana pomyślnie!' )
+                                .position( 'bottom right' )
+                                .hideDelay( 3000 )
+
+                            );
+
+                        for ( var i = 0; i < $scope.Downloading.length; i++ ) {
+
+                            if ( $scope.Downloading[i] == response.data.id ) {
+
+                                $scope.Downloading.splice( i, 1 );
+
+                                break; } } }
+
+                    },
+
+                function ( response ) {
+
+                    console.log( "ERROR #" + response.status + " IN Synchronize: " + response.data );
+
+                    }
+
+                );
+
+            }
+
+        };
+
     $scope.Setup = function ( ) {
 
-        var CatalogReady = false;
-        var PlaylistReady = true;
+        var LibraryReady = false;
+        var PlaylistReady = false;
         var SettingsReady = true;
 
         $http.get( '/library' ).then(
@@ -225,11 +475,40 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
                 $scope.Catalog = response.data;
                 $scope.Tracks = $scope.Catalog;
 
-                CatalogReady = true;
+                LibraryReady = true;
 
                 if ( PlaylistReady && SettingsReady ) {
 
-                    $scope.ContentReady = true; }
+                    $scope.ContentReady = true;
+
+                    $interval( $scope.SynchronizeWithServer, 5000 ); }
+
+                },
+
+            function ( response ) {
+
+                console.log( "ERROR #" + response.status + " IN SETUP: " + response.data );
+
+                // ERROR
+
+                }
+
+            );
+
+        $http.get( '/playlist' ).then(
+
+            function ( response ) {
+
+                $scope.Schedule = response.data.schedule;
+                $scope.Audio = response.data.audio;
+
+                PlaylistReady = true;
+
+                if ( LibraryReady && SettingsReady ) {
+
+                    $scope.ContentReady = true;
+
+                    $interval( $scope.SynchronizeWithServer, 5000 ); }
 
                 },
 
@@ -252,3 +531,27 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
         } );
 
     } ] );
+
+function CreateTrackController ( $scope, $mdDialog ) {
+
+    $scope.YoutubeLink = '';
+
+    $scope.hide = function ( ) {
+
+        $mdDialog.hide();
+
+        };
+
+    $scope.cancel = function ( ) {
+
+        $mdDialog.cancel();
+
+        };
+
+    $scope.respond = function( response ) {
+
+        $mdDialog.hide( response );
+
+        };
+
+    }

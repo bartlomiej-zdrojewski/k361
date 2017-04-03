@@ -1,0 +1,74 @@
+<md-dialog aria-label="Tworzenie ścieżki"> <!-- EN: Track creation -->
+
+    <form name="DialogForm" ng-cloak>
+
+        <md-toolbar>
+
+            <div class="md-toolbar-tools">
+
+                <h2>Tworzenie ścieżki</h2> <!-- EN: Track creation -->
+
+                <span flex></span>
+
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon md-svg-src="images/close.svg" aria-label="Zamknij okno tworzenia ścieżki"></md-icon> <!-- EN: Close the window of track creation -->
+                </md-button>
+
+            </div>
+
+        </md-toolbar>
+
+        <md-dialog-content>
+
+            <md-tabs md-stretch-tabs="always" md-dynamic-height>
+
+                <md-tab label="Plik lokalny">
+
+                    <md-content class="md-padding" style="width:700px;">
+
+                        <p style="font-size:18px;text-align:center;" flex>Dostępne już niedługo!</p> <!-- TODO -->
+
+                    </md-content>
+
+                </md-tab>
+
+                <md-tab label="Youtube">
+
+                    <md-content class="md-padding" style="width:700px;" layout="column" flex>
+
+                        <p style="font-size:18px;text-align:center;" flex>Po prostu wprowadź link do filmu z serwisu Youtube:</p> <!-- EN: Simply enter a link to Youtube video -->
+
+                        <div layout="row">
+
+                            <span flex></span>
+
+                            <md-input-container flex="80">
+                                <input style="text-align:center;" aria-label="Link" ng-model="YoutubeLink" name="YoutubeLink" type="text" ng-pattern="/(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)(?:\/watch\?v=|\/)([^\s&]+)/" md-maxlength="1024" required>
+                                <div ng-messages="DialogForm.YoutubeLink.$error">
+                                    <div ng-message="required">Link do filmu jest wymagany!</div> <!-- EN: Link to video is required -->
+                                    <div ng-message="md-maxlength">Link do filmu jest za długi!</div> <!-- EN: Link to video is too long -->
+                                    <div ng-message="pattern">Wprowadzony tekst nie przypomina linku do filmu!</div> <!-- EN: Entered text does not look like link to video -->
+                                </div>
+                            </md-input-container>
+
+                            <span flex></span>
+
+                        </div>
+
+                        <md-input-container style="margin-top:0px;" layout="row" flex>
+                            <span flex></span>
+                            <md-button class="md-raised md-primary" ng-disabled="DialogForm.YoutubeLink.$invalid" ng-click="respond( { service: 'YOUTUBE', link: YoutubeLink } )">&nbsp;&nbsp;&nbsp;Stwórz ścieżkę&nbsp;&nbsp;&nbsp;</md-button> <!-- EN: Create track -->
+                            <span flex></span>
+                        </md-input-container>
+
+                    </md-content>
+
+                </md-tab>
+
+            </md-tabs>
+
+        </md-dialog-content>
+
+    </form>
+
+</md-dialog>

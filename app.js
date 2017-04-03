@@ -17,11 +17,34 @@ var app = express();
 var config = require('./config.js');
 var db = require('./db.js'); db.init();
 
-app.locals.AudiosStream = 0;
-app.locals.AudioPlaying = 0;
+app.locals.PlaylistManager = function ( app, db ) {
+
+    clearTimeout( app.locals.PlaylistManagerTimeout );
+
+    var Audio = db.dread( 'PLT-AUDIO' );
+
+    if ( !Audio.valid ) {
+
+        db.dwrite( 'PLT-AUDIO', { stream: {}, playing: false, track: '' } );
+
+        Audio.obj = { stream: {}, playing: false, track: '' }; }
+
+    var Schedule = db.sread( 'PLT-SCHEDULE' );
+
+    if ( !Schedule.valid ) {
+
+        db.swrite( 'PLT-SCHEDULE', { schedule: [] } );
+
+        Schedule.obj = { schedule: [] }; }
+
+    // TODO
+
+    };
+
+app.locals.PlaylistManagerTimeout = setTimeout( function ( ) { app.locals.PlaylistManager( app, db ); }, 0 );
 
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use( logger('dev') );
+//app.use( logger('dev') );
 app.use( bodyParser.json() );
 app.use( bodyParser.urlencoded( { extended: true } ) );
 app.use( cookieParser() );
