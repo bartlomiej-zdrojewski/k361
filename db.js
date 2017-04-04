@@ -8,7 +8,9 @@ db.init = function ( ) {
 
     try {
 
-        db.smem = JSON.parse( fs.readFileSync( './db.json', 'utf8' ) ); }
+        db.smem = JSON.parse( fs.readFileSync( './db.json', 'utf8' ) );
+
+        console.log('Initiating the database'); }
 
     catch ( err ) {
 
@@ -21,11 +23,13 @@ db.init = function ( ) {
 
 db.reset = function ( ) {
 
+    console.log('Resetting the database');
+
     db.dmem = [];
     db.smem = [
 
-        { id: "ATH-PASSWORD", obj: { data: "", time: 0 } },
-        { id: "LIB-CATALOG", obj: { catalog: [], tracks: [] } }
+        { id: "ATH-PASSWORD", obj: { data: "", timestamp: Date.now() } },
+        { id: "LIB-CATALOG", obj: { catalog: [], tracks: [], timestamp: Date.now() } }
         // TODO: SETTINGS
 
         ];

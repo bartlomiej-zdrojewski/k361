@@ -11,7 +11,7 @@ router.get( '/', function( req, res ) {
 
     auth.logout(req.cookies.token);
 
-    res.send('Done');
+    res.sendStatus(200);
 
     } );
 

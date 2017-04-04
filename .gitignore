@@ -1,5 +1,7 @@
 # Module specific files
+db.json
 tracks/*
+node_modules/
 
 # IDE specific files
 .idea/

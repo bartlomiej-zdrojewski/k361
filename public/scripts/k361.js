@@ -15,6 +15,14 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
     $scope.Schedule = [];
     $scope.Tracks = [];
 
+    $scope.Synchronization = {
+
+        catalog: 0,
+        schedule: 0,
+        settings: 0
+
+        };
+
     $scope.TimeToText = function ( time ) {
 
         var Text = "";
@@ -364,37 +372,65 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
     $scope.SynchronizeWithServer = function ( ) {
 
-        $http.get( '/state/synchronize' ).then(
+        $http.post( '/state/synchronize', {
 
-            function ( response ) {
+            catalog: $scope.Catalog.timestamp,
+            schedule: $scope.Schedule.timestamp,
+            settings: $scope.Settings.timestamp
 
-                if ( response.data.update.catalog ) {
+            } ).then(
 
-                    $scope.Catalog = response.data.catalog;
+                function ( response ) {
 
-                    $scope.SearchInCatalog(); }
+                    $scope.Audio = response.data.audio;
 
-                if ( response.data.update.schedule ) {
+                    if ( response.data.catalog.timestamp > $scope.Synchronization.catalog ) {
 
-                    $scope.Schedule = response.data.schedule;
+                        $scope.Catalog = response.data.catalog.updated;
 
-                    // TODO: UPDATE PLAYLIST
+                        for ( var i = 0; i < response.data.catalog.updated.length; i++ ) {
+
+                            var Done = false;
+
+                            for ( var j = 0; j < $scope.Catalog.length; j++ ) {
+
+                                if ( $scope.Catalog[j].id == response.data.catalog.updated[i].id ) {
+
+                                    $scope.Catalog[j] = response.data.catalog.updated[i];
+
+                                    Done = true; break; } }
+
+                            if ( !Done ) {
+
+                                $scope.Catalog.push( response.data.catalog.updated[i] ); }
+
+                            // REMOVED
+
+                            }
+
+                        $scope.Synchronization.catalog = response.data.catalog.timestamp;
+
+                        $scope.SearchInCatalog(); }
+
+                    if ( response.data.schedule.timestamp > $scope.Synchronization.schedule ) {
+
+                        $scope.Schedule = response.data.schedule.data;
+                        $scope.Synchronization.schedule = response.data.schedule.timestamp; }
+
+                    if ( response.data.settings.timestamp > $scope.Synchronization.settings ) {
+
+                        $scope.Settings = response.data.settings.data;
+                        $scope.Synchronization.settings = response.data.settings.timestamp; }
+
+                    $scope.Synchronize();
+
+                    },
+
+                function ( response ) {
+
+                    console.log( "ERROR #" + response.status + " IN SYNCRONIZE_WITH_SERVER: " + response.data );
 
                     }
-
-                // TODO: UPDATE SETTINGS
-
-                $scope.Audio = response.data.audio;
-
-                $scope.Synchronize();
-
-                },
-
-            function ( response ) {
-
-                console.log( "ERROR #" + response.status + " IN c: " + response.data );
-
-                }
 
             );
 
@@ -452,7 +488,7 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                 function ( response ) {
 
-                    console.log( "ERROR #" + response.status + " IN Synchronize: " + response.data );
+                    console.log( "ERROR #" + response.status + " IN SYNCHRONIZE: " + response.data );
 
                     }
 
@@ -472,8 +508,9 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
             function ( response ) {
 
-                $scope.Catalog = response.data;
+                $scope.Catalog = response.data.catalog;
                 $scope.Tracks = $scope.Catalog;
+                $scope.Synchronization = response.data.catalog;
 
                 LibraryReady = true;
 
@@ -481,7 +518,7 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                     $scope.ContentReady = true;
 
-                    $interval( $scope.SynchronizeWithServer, 5000 ); }
+                    $interval( $scope.SynchronizeWithServer, $scope.Settings.SynchronizationDelay ); }
 
                 },
 
@@ -499,8 +536,9 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
             function ( response ) {
 
-                $scope.Schedule = response.data.schedule;
                 $scope.Audio = response.data.audio;
+                $scope.Schedule = response.data.schedule;
+                $scope.Synchronization = response.data.timestamp;
 
                 PlaylistReady = true;
 
@@ -508,7 +546,34 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                     $scope.ContentReady = true;
 
-                    $interval( $scope.SynchronizeWithServer, 5000 ); }
+                    $interval( $scope.SynchronizeWithServer, $scope.Settings.SynchronizationDelay ); }
+
+                },
+
+            function ( response ) {
+
+                console.log( "ERROR #" + response.status + " IN SETUP: " + response.data );
+
+                // ERROR
+
+                }
+
+            );
+
+        $http.get( '/state' ).then(
+
+            function ( response ) {
+
+                $scope.Settings = response.data.settings;
+                $scope.Synchronization = response.data.timestamp;
+
+                SettingsReady = true;
+
+                if ( LibraryReady && PlaylistReady ) {
+
+                    $scope.ContentReady = true;
+
+                    $interval( $scope.SynchronizeWithServer, $scope.Settings.SynchronizationDelay ); }
 
                 },
 

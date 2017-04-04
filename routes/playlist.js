@@ -24,7 +24,7 @@ router.get( '/', function( req, res ) {
 
         console.log('Playlist schedule is inaccessible!'); return; }
 
-    res.json( { audio: { playing: Audio.obj.playing, track: Audio.obj.track }, schedule: Schedule.obj.schedule } );
+    res.json( { audio: { playing: Audio.obj.playing, track: Audio.obj.track }, schedule: Schedule.obj.schedule, timestamp: Schedule.obj.timestamp } );
 
     } );
 
@@ -102,7 +102,7 @@ router.post( '/play', function( req, res ) {
 
         }, ( Track.obj.end - Track.obj.begin ) * 1000 );
 
-    res.send('Done');
+    res.sendStatus(200);
 
     } );
 
@@ -129,7 +129,7 @@ router.post( '/stop', function( req, res ) {
 
     req.app.locals.PlaylistManager( req.app, db );
 
-    res.send('Done');
+    res.sendStatus(200);
 
     } );
 

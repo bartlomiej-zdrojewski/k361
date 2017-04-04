@@ -33,9 +33,12 @@ app.locals.PlaylistManager = function ( app, db ) {
 
     if ( !Schedule.valid ) {
 
-        db.swrite( 'PLT-SCHEDULE', { schedule: [] } );
+        console.log('Resetting the playlist schedule');
 
-        Schedule.obj = { schedule: [] }; }
+        Schedule.valid = true;
+        Schedule.obj = { schedule: [], timestamp: Date.now() };
+
+        db.swrite( 'PLT-SCHEDULE', Schedule.obj ); }
 
     // TODO
 

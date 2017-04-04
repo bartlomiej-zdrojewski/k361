@@ -1,0 +1,47 @@
+--------------------------------------------------
+
+LIB-CATALOG: {
+
+    catalog: [ // ALL TRACKS WITH 'READY' STATE
+
+        {
+            id: ID,
+            timestamp: DATE, // TIMESTAMP
+
+            title: STRING,
+            album: STRING,
+            author: STRING,
+            length: NUMBER
+        }
+
+        ],
+
+    tracks: [ ID ], // ID'S OF ALL TRACKS
+
+    timestamp: DATE
+
+    }
+
+--------------------------------------------------
+
+LIB-TRACK-XXX: {
+
+    id: ID,
+
+    title: STRING,
+    album: STRING,
+    author: STRING,
+
+    length: NUMBER,
+    begin: NUMBER,
+    end: NUMBER,
+
+    rate: NUMBER, // FROM 1 TO 10
+    views: NUMBER,
+
+    path: PATH,
+    state: STRING // 'UPLOAD' OR 'DOWNLOAD' OR 'ERROR' OR 'READY' OR 'REMOVED'
+
+    }
+
+--------------------------------------------------

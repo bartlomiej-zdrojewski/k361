@@ -22,7 +22,7 @@ router.get( '/', function( req, res ) {
 
         res.status(500).send('Library catalog is inaccessible!'); return; }
 
-    res.json( Catalog.obj.catalog );
+    res.json( { catalog: Catalog.obj.catalog, timestamp: Catalog.obj.timestamp } );
 
     } );
 
@@ -68,7 +68,7 @@ router.get( '/track', function( req, res ) { // { id: STRING }
 
     } );
 
-router.post( '/update', function( req, res ) { // { id: STRING, title: STRING, album: STRING, author: STRING, begin: NUMBER, end: NUMBER }
+router.post( '/track', function( req, res ) { // { id: STRING, title: STRING, album: STRING, author: STRING, begin: NUMBER, end: NUMBER }
 
     if ( !auth.validate(req) ) {
 
@@ -110,7 +110,7 @@ router.post( '/update', function( req, res ) { // { id: STRING, title: STRING, a
 
     if ( typeof( req.body.end ) !== 'undefined' ) {
 
-        Track.obj.begin = req.body.end; }
+        Track.obj.end = req.body.end; }
 
     var Catalog = db.sread('LIB-CATALOG');
 
@@ -122,12 +122,15 @@ router.post( '/update', function( req, res ) { // { id: STRING, title: STRING, a
         
         if ( Catalog.obj.catalog[i].id === Track.obj.id ) {
 
+            var Timestamp = Date.now();
+
+            Catalog.obj.catalog.timestamp = Timestamp;
+            Catalog.obj.catalog[i].timestamp = Timestamp;
+
             Catalog.obj.catalog[i].title = Track.obj.title;
             Catalog.obj.catalog[i].album = Track.obj.album;
             Catalog.obj.catalog[i].author = Track.obj.author;
             Catalog.obj.catalog[i].length = Track.obj.end - Track.obj.begin;
-            Catalog.obj.catalog[i].begin = Track.obj.begin;
-            Catalog.obj.catalog[i].end = Track.obj.end;
             
             break; } }
         
@@ -137,7 +140,7 @@ router.post( '/update', function( req, res ) { // { id: STRING, title: STRING, a
 
         } );
         
-    res.send('Done');
+    res.sendStatus(200);
 
     } );
 
@@ -177,6 +180,9 @@ router.post( '/download', function( req, res ) { // { service: STRING, code: STR
             begin: 0,
             end: 0,
 
+            rate: 5,
+            views: 0,
+
             path: '',
             state: 'DOWNLOAD'
 
@@ -214,6 +220,8 @@ router.post( '/download', function( req, res ) { // { service: STRING, code: STR
 
                     if ( err ) {
 
+                        var Timestamp = Date.now();
+
                         Track.title = Track.id;
                         Track.album = 'Youtube';
                         Track.author = 'Unknown';
@@ -223,12 +231,16 @@ router.post( '/download', function( req, res ) { // { service: STRING, code: STR
                         Catalog.obj.catalog.push( {
 
                             id: Track.id,
+                            timestamp: Timestamp,
+
                             title: Track.title,
                             album: Track.album,
                             author: Track.author,
                             length: Track.length
 
                             } );
+
+                        Catalog.obj.catalog.timestamp = Timestamp;
 
                         db.swrite( 'LIB-TRACK-' + Track.id, Track, function ( ) {
 
@@ -237,6 +249,8 @@ router.post( '/download', function( req, res ) { // { service: STRING, code: STR
                             } );
 
                         throw err; }
+
+                    var Timestamp = Date.now();
 
                     Track.title = videoInfo.title;
                     Track.album = 'Youtube';
@@ -247,12 +261,16 @@ router.post( '/download', function( req, res ) { // { service: STRING, code: STR
                     Catalog.obj.catalog.push( {
 
                         id: Track.id,
+                        timestamp: Timestamp,
+
                         title: Track.title,
                         album: Track.album,
                         author: Track.author,
                         length: Track.length
 
                         } );
+
+                    Catalog.obj.catalog.timestamp = Timestamp;
 
                     db.swrite( 'LIB-TRACK-' + Track.id, Track, function ( ) {
 
@@ -313,8 +331,15 @@ router.post( '/remove', function( req, res ) { // { id: STRING }
 
         if ( Catalog.obj.catalog[i].id === Track.obj.id ) {
 
+            var Timestamp = Date.now();
+
+            Catalog.obj.catalog.timestamp = Timestamp;
+            Catalog.obj.catalog[i].timestamp = Timestamp;
+
             Track.obj.state = 'REMOVED';
-            Catalog.obj.catalog.splice( i, 1 ); } }
+            Catalog.obj.catalog.splice( i, 1 );
+
+            break; } }
 
     db.swrite( 'LIB-TRACK-' + Track.obj.id, Track.obj, function ( ) {
 
@@ -322,7 +347,7 @@ router.post( '/remove', function( req, res ) { // { id: STRING }
 
         } );
 
-    res.send('Done');
+    res.sendStatus(200);
 
     } );
 
@@ -352,17 +377,23 @@ router.post( '/restore', function( req, res ) { // { id: STRING }
 
         if ( Catalog.obj.catalog[i].id === Track.obj.id ) {
 
+            var Timestamp = Date.now();
+
             Track.obj.state = 'READY';
 
             Catalog.obj.catalog.push( {
 
                 id: Track.id,
+                timestamp: Timestamp,
+
                 title: Track.title,
                 album: Track.album,
                 author: Track.author,
                 length: Track.end - Track.begin
 
                 } );
+
+            Catalog.obj.catalog.timestamp = Timestamp;
 
             break; } }
 
@@ -372,7 +403,7 @@ router.post( '/restore', function( req, res ) { // { id: STRING }
 
         } );
 
-    res.send('Done');
+    res.sendStatus(200);
 
     } );
 
@@ -387,6 +418,8 @@ router.get( '/clean', function( req, res ) {
     if ( !Catalog.valid ) {
 
         res.status(500).send('Library catalog is inaccessible!'); return; }
+
+    console.log('Cleaning the library from garbage');
 
     for ( var i = 0; i < Catalog.obj.tracks.length; i++ ) {
 
@@ -408,7 +441,10 @@ router.get( '/clean', function( req, res ) {
 
             Catalog.obj.tracks.splice( i, 1 ); } }
 
-    res.send('Done');
+    db.swrite( 'LIB-CATALOG', Catalog.obj );
+
+    res.sendStatus(200);
+    res.sendStatus(200);
 
     } );
 

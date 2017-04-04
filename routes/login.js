@@ -22,7 +22,7 @@ router.post( '/', function( req, res ) { // { password : STRING }
 
         res.status(400).send('Wrong password'); return; }
 
-    res.send('Done');
+    res.sendStatus(200);
 
     } );
 

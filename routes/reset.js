@@ -12,7 +12,7 @@ router.get( '/', function( req, res ) {
 
         res.status(401).send('Unauthorized'); return; }
 
-    console.log('Resetting entire server');
+    console.log('Resetting the entire server');
 
     var Audio = db.dread( 'PLT-AUDIO' );
 
@@ -39,7 +39,7 @@ router.get( '/', function( req, res ) {
     db.reset();
     req.app.locals.PlaylistManager( req.app, db );
 
-    res.send('Done');
+    res.sendStatus(200);
 
     } );
 
