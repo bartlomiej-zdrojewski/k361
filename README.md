@@ -53,6 +53,16 @@ apt-get install -y nodejs
 
 [TODO]
 
+### MPlayer
+
+#### Windows
+
+[TODO]
+
+#### MacOs, Ubuntu and Debian
+
+[TODO]
+
 ### k361
 
 #### Windows
@@ -64,6 +74,7 @@ To change the default port, open the *config.js* file in notepad and edit the *p
 To finally run a server, open terminal (command line), go to *k361* directory location (using `cd` command) and type:
 
 ```
+npm install
 node ./app.js
 ```
 
@@ -91,6 +102,7 @@ nano config.js
 To finally run a server, type:
 
 ```
+npm install
 node ./app.js
 ```
 
@@ -103,7 +115,8 @@ You may consider automatically launching a server on system startup. If you are 
 
 ## Used software
 
-* [shortid](https://www.npmjs.com/package/shortid)
+* [FFmpeg](https://ffmpeg.org/)
+* [MPlayer](http://www.mplayerhq.hu/)
 * [Express](https://expressjs.com/)
 * [NodeJS](https://nodejs.org/en/)
 * [AngularJS](https://angularjs.org/)
