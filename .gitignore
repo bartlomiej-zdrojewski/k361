@@ -1,6 +1,7 @@
 # Module specific files
 db.json
 tracks/*
+!tracks/.empty
 node_modules/
 
 # IDE specific files

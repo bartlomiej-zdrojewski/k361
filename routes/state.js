@@ -15,7 +15,13 @@ router.get( '/', function( req, res ) {
 
     var Response = {
 
-        SynchronizationDelay: config.synchronization_delay
+        settings: {
+
+            SynchronizationDelay: config.synchronization_delay
+
+            },
+
+        timestamp: 0
 
         };
 
@@ -46,13 +52,13 @@ router.post( '/synchronize', function( req, res ) { // { catalog: DATE, schedule
     if ( !Schedule.valid ) {
 
         console.log('Playlist schedule is inaccessible!'); return; }
-
+/*
     var Settings = db.sread( 'STE-SETTINGS' );
 
     if ( !Settings.valid ) {
 
         console.log('Settings are inaccessible!'); return; }
-
+*/
     var Response = {
 
         audio: {
@@ -80,7 +86,7 @@ router.post( '/synchronize', function( req, res ) { // { catalog: DATE, schedule
 
         settings: {
 
-            timestamp: Settings.obj.timestamp,
+            timestamp: 0, //Settings.obj.timestamp,
             data: []
 
             }
@@ -93,16 +99,26 @@ router.post( '/synchronize', function( req, res ) { // { catalog: DATE, schedule
 
             if ( Catalog.obj.catalog[i].timestamp > req.body.catalog ) {
 
-                Response.catalog.updated.push( Catalog.obj.catalog[i] ); } } }
+                Response.catalog.updated.push( Catalog.obj.catalog[i] ); } }
+
+        for ( var i = 0; i < Catalog.obj.tracks.length; i++ ) {
+
+            var Track = db.sread( 'LIB-TRACK-' + Catalog.obj.tracks[i] );
+
+            if ( Track.valid ) {
+
+                if ( Track.obj.state === 'REMOVED' ) {
+
+                    Response.catalog.removed.push( Track.obj ); } } } }
 
     if ( Schedule.obj.timestamp > req.body.schedule ) {
 
         Response.schedule.data = Schedule.obj.schedule; }
-
+/*
     if ( Settings.obj.timestamp > req.body.settings ) {
 
         Response.settings.data = Settings.obj.settings; }
-
+*/
     res.json( Response );
 
     } );

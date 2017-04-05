@@ -14,7 +14,7 @@ db.init = function ( ) {
 
     catch ( err ) {
 
-        console.log( 'While initiating the database error occurred: ' + err );
+        console.log( 'While initiating database an error occurred: ' + err );
 
         db.reset();
         db.init(); }

@@ -34,7 +34,15 @@ router.get( '/', function( req, res ) {
 
                 if ( fs.existsSync( 'tracks/' + Track.obj.path ) ) {
 
-                    setTimeout( function ( ) { fs.unlink( 'tracks/' + Track.obj.path ) }, 250 ); } } } }
+                    setTimeout( function ( ) {
+
+                        fs.unlink( 'tracks/' + Track.obj.path , function ( err ) {
+
+                            console.log( 'While deleting file \'tracks/' + Track.obj.path + '\' an error occurred: ' + err );
+
+                            } ) },
+
+                        250 ); } } } }
 
     db.reset();
     req.app.locals.PlaylistManager( req.app, db );

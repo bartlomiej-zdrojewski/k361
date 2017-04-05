@@ -144,7 +144,7 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
                                     $mdToast.show(
 
                                         $mdToast.simple()
-                                            .textContent( 'Ścieżka #' + response.data + " zostanie niedługo pobrana!" )
+                                            .textContent( 'Ścieżka #' + response.data + " zostanie wkrótce pobrana!" )
                                             .position( 'bottom right' )
                                             .hideDelay( 3000 )
 
@@ -374,9 +374,9 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
         $http.post( '/state/synchronize', {
 
-            catalog: $scope.Catalog.timestamp,
-            schedule: $scope.Schedule.timestamp,
-            settings: $scope.Settings.timestamp
+            catalog: $scope.Synchronization.catalog,
+            schedule: $scope.Synchronization.schedule,
+            settings: $scope.Synchronization.settings
 
             } ).then(
 
@@ -386,8 +386,6 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                     if ( response.data.catalog.timestamp > $scope.Synchronization.catalog ) {
 
-                        $scope.Catalog = response.data.catalog.updated;
-
                         for ( var i = 0; i < response.data.catalog.updated.length; i++ ) {
 
                             var Done = false;
@@ -395,22 +393,32 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
                             for ( var j = 0; j < $scope.Catalog.length; j++ ) {
 
                                 if ( $scope.Catalog[j].id == response.data.catalog.updated[i].id ) {
-
+                                    console.log('UPDATE');
                                     $scope.Catalog[j] = response.data.catalog.updated[i];
 
                                     Done = true; break; } }
 
                             if ( !Done ) {
+                                console.log('CREATE');
+                                $scope.Catalog.push( response.data.catalog.updated[i] ); } }
 
-                                $scope.Catalog.push( response.data.catalog.updated[i] ); }
+                        for ( var i = 0; i < response.data.catalog.removed.length; i++ ) {
 
-                            // REMOVED
+                            for ( var j = 0; j < $scope.Catalog.length; j++ ) {
 
-                            }
+                                if ( $scope.Catalog[j].id == response.data.catalog.removed[i].id ) {
+
+                                    $scope.Catalog.splice( j, 1 );
+
+                                    break; } } }
+
+                        console.log($scope.Catalog);
 
                         $scope.Synchronization.catalog = response.data.catalog.timestamp;
 
-                        $scope.SearchInCatalog(); }
+                        $scope.SearchInCatalog();
+
+                        console.log($scope.Tracks); }
 
                     if ( response.data.schedule.timestamp > $scope.Synchronization.schedule ) {
 
@@ -502,7 +510,7 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
         var LibraryReady = false;
         var PlaylistReady = false;
-        var SettingsReady = true;
+        var SettingsReady = false;
 
         $http.get( '/library' ).then(
 
@@ -510,7 +518,7 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                 $scope.Catalog = response.data.catalog;
                 $scope.Tracks = $scope.Catalog;
-                $scope.Synchronization = response.data.catalog;
+                $scope.Synchronization.catalog = response.data.timestamp;
 
                 LibraryReady = true;
 
@@ -538,7 +546,7 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                 $scope.Audio = response.data.audio;
                 $scope.Schedule = response.data.schedule;
-                $scope.Synchronization = response.data.timestamp;
+                $scope.Synchronization.schedule = response.data.timestamp;
 
                 PlaylistReady = true;
 
@@ -565,7 +573,7 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
             function ( response ) {
 
                 $scope.Settings = response.data.settings;
-                $scope.Synchronization = response.data.timestamp;
+                $scope.Synchronization.settings = response.data.timestamp;
 
                 SettingsReady = true;
 

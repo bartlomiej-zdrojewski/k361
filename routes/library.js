@@ -124,7 +124,7 @@ router.post( '/track', function( req, res ) { // { id: STRING, title: STRING, al
 
             var Timestamp = Date.now();
 
-            Catalog.obj.catalog.timestamp = Timestamp;
+            Catalog.obj.timestamp = Timestamp;
             Catalog.obj.catalog[i].timestamp = Timestamp;
 
             Catalog.obj.catalog[i].title = Track.obj.title;
@@ -211,7 +211,7 @@ router.post( '/download', function( req, res ) { // { service: STRING, code: STR
 
                 if ( !Catalog.valid ) {
 
-                    console.log('Library catalog is inaccessible!'); return; }
+                    console.log( 'While downloading track #' + Track.id + ' an error occurred: library catalog is inaccessible' ); return; }
 
                 youtubeInfo( req.body.code, function ( err, videoInfo ) {
 
@@ -240,7 +240,7 @@ router.post( '/download', function( req, res ) { // { service: STRING, code: STR
 
                             } );
 
-                        Catalog.obj.catalog.timestamp = Timestamp;
+                        Catalog.obj.timestamp = Timestamp;
 
                         db.swrite( 'LIB-TRACK-' + Track.id, Track, function ( ) {
 
@@ -270,7 +270,7 @@ router.post( '/download', function( req, res ) { // { service: STRING, code: STR
 
                         } );
 
-                    Catalog.obj.catalog.timestamp = Timestamp;
+                    Catalog.obj.timestamp = Timestamp;
 
                     db.swrite( 'LIB-TRACK-' + Track.id, Track, function ( ) {
 
@@ -291,7 +291,7 @@ router.post( '/download', function( req, res ) { // { service: STRING, code: STR
 
                 db.swrite( 'LIB-TRACK-' + Track.id, Track );
 
-                console.log( 'While downloading track #' + Track.id + ' error occurred: ' + error ); } );
+                console.log( 'While downloading track #' + Track.id + ' an error occurred: ' + error ); } );
 
             File.on( 'progress', function( progress ) {
 
@@ -333,7 +333,7 @@ router.post( '/remove', function( req, res ) { // { id: STRING }
 
             var Timestamp = Date.now();
 
-            Catalog.obj.catalog.timestamp = Timestamp;
+            Catalog.obj.timestamp = Timestamp;
             Catalog.obj.catalog[i].timestamp = Timestamp;
 
             Track.obj.state = 'REMOVED';
@@ -393,7 +393,7 @@ router.post( '/restore', function( req, res ) { // { id: STRING }
 
                 } );
 
-            Catalog.obj.catalog.timestamp = Timestamp;
+            Catalog.obj.timestamp = Timestamp;
 
             break; } }
 
@@ -429,9 +429,11 @@ router.get( '/clean', function( req, res ) {
 
             if ( Track.obj.state === 'ERROR' || Track.obj.state === 'REMOVED' ) {
 
-                if ( fs.existsSync( 'tracks/' + Track.obj.path ) ) {
+                fs.unlink( 'tracks/' + Track.obj.path , function ( err ) {
 
-                    fs.unlink( 'tracks/' + Track.obj.path ); }
+                    console.log( 'While deleting file \'tracks/' + Track.obj.path + '\' an error occurred: ' + err );
+
+                    } );
 
                 db.sremove( Track.obj.id );
 
@@ -443,7 +445,6 @@ router.get( '/clean', function( req, res ) {
 
     db.swrite( 'LIB-CATALOG', Catalog.obj );
 
-    res.sendStatus(200);
     res.sendStatus(200);
 
     } );
