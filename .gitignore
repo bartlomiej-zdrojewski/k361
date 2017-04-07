@@ -1,4 +1,5 @@
 # Module specific files
+log
 db.json
 tracks/*
 !tracks/.empty

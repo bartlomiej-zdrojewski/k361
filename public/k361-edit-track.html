@@ -1,0 +1,161 @@
+<md-dialog aria-label="Edytowanie ścieżki"> <!-- EN: Track edition -->
+
+    <form name="DialogForm" ng-init="Setup()" ng-cloak>
+
+        <md-toolbar>
+
+            <div class="md-toolbar-tools">
+
+                <h2>Edytowanie ścieżki</h2> <!-- EN: Track edition -->
+
+                <span flex></span>
+
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon md-svg-src="images/close.svg" aria-label="Zamknij okno edytowania ścieżki"></md-icon> <!-- EN: Close the window of track edition -->
+                </md-button>
+
+            </div>
+
+        </md-toolbar>
+
+        <md-dialog-content>
+
+            <md-content class="md-padding" style="width:700px;padding-top:40px;padding-bottom:10px;" layout="column" flex>
+
+                <div style="width:100%;height:400px;" layout="row" layout-align="center center" ng-show="!TrackReady">
+                    <md-progress-circular md-mode="indeterminate" md-diameter="80"></md-progress-circular>
+                </div>
+
+                <div layout="row" ng-show="TrackReady">
+
+                    <span flex></span>
+
+                    <md-input-container flex="90">
+                        <label>Tytuł</label>
+                        <input aria-label="Tytuł" ng-model="Track.title" name="TrackTitle" type="text" minlength="3" maxlength="256" required md-no-asterisk>
+                        <div ng-messages="DialogForm.TrackTitle.$error">
+                            <div ng-message="required">Tytuł jest wymagany!</div> <!-- EN: Title is required -->
+                            <div ng-message="minlength">Tytuł jest za krótki!</div> <!-- EN: Title is too long -->
+                            <div ng-message="maxlength">Tytuł jest za długi!</div> <!-- EN: Title is too long -->
+                        </div>
+                    </md-input-container>
+
+                    <span flex></span>
+
+                </div>
+
+                <div layout="row" ng-show="TrackReady">
+
+                    <span flex></span>
+
+                    <md-input-container flex="90">
+                        <label>Album</label>
+                        <input aria-label="Album" ng-model="Track.album" name="TrackAlbum" type="text" minlength="3" maxlength="256" required md-no-asterisk>
+                        <div ng-messages="DialogForm.TrackAlbum.$error">
+                            <div ng-message="required">Album jest wymagany!</div> <!-- EN: Album is required -->
+                            <div ng-message="minlength">Tytuł albumu jest za krótki!</div> <!-- EN: Album title is too short -->
+                            <div ng-message="maxlength">Tytuł albumu jest za długi!</div> <!-- EN: Album title is too long -->
+                        </div>
+                    </md-input-container>
+
+                    <span flex></span>
+
+                </div>
+
+                <div layout="row" ng-show="TrackReady">
+
+                    <span flex></span>
+
+                    <md-input-container flex="90">
+                        <label>Autor</label>
+                        <input aria-label="Autor" ng-model="Track.author" name="TrackAuthor" type="text" minlength="3" maxlength="256" required md-no-asterisk>
+                        <div ng-messages="DialogForm.TrackAuthor.$error">
+                            <div ng-message="required">Autor jest wymagany!</div> <!-- EN: Author is required -->
+                            <div ng-message="minlength">Imię autora jest za krótkie!</div> <!-- EN: Author's name is too short -->
+                            <div ng-message="maxlength">Imię autora jest za długie!</div> <!-- EN: Author's name is too long -->
+                        </div>
+                    </md-input-container>
+
+                    <span flex></span>
+
+                </div>
+
+                <div style="margin-top:10px;" layout="row" ng-show="TrackReady">
+
+                    <span flex></span>
+
+                    <div layout="row" flex="90">
+
+                        <div layout="row" layout-align="left center" flex="15">
+                            <span>Początek</span>
+                        </div>
+
+                        <md-slider class="md-primary" aria-label="Początek" ng-model="Track.begin" step="1" min="0" max="{{Track.length}}" flex></md-slider>
+
+                        <div layout="row" layout-align="center center" flex="15">
+                            <span>{{TimeToText(Track.begin)}}</span>
+                        </div>
+
+                    </div>
+
+                    <span flex></span>
+
+                </div>
+
+                <div layout="row" ng-show="TrackReady">
+
+                    <span flex></span>
+
+                    <div layout="row" flex="90">
+
+                        <div layout="row" layout-align="left center" flex="15">
+                            <span>Koniec</span>
+                        </div>
+
+                        <md-slider ng-class="{ 'md-primary' : ( Track.end >= Track.begin ), 'md-secondary' : ( Track.end < Track.begin ) }" aria-label="Koniec" ng-model="Track.end" step="1" min="0" max="{{Track.length}}" flex></md-slider>
+
+                        <div layout="row" layout-align="center center" flex="15">
+                            <span>{{TimeToText(Track.end)}}</span>
+                        </div>
+
+                    </div>
+
+                    <span flex></span>
+
+                </div>
+
+                <div layout="row" ng-show="TrackReady">
+
+                    <span flex></span>
+
+                    <div layout="row" flex="90">
+
+                        <div layout="row" layout-align="left center" flex="15">
+                            <span>Ocena</span>
+                        </div>
+
+                        <md-slider class="md-primary" aria-label="Ocena" ng-model="Track.rate" step="1" min="0" max="10" flex></md-slider>
+
+                        <div layout="row" layout-align="center center" flex="15">
+                            <span>{{Track.rate}}/10</span>
+                        </div>
+
+                    </div>
+
+                    <span flex></span>
+
+                </div>
+
+                <md-input-container layout="row" flex>
+                    <span flex></span>
+                    <md-button class="md-raised md-primary" ng-disabled="DialogForm.$invalid || ( Track.end < Track.begin )" ng-click="respond(Track)">&nbsp;&nbsp;&nbsp;Zapisz zmiany&nbsp;&nbsp;&nbsp;</md-button> <!-- EN: Create track -->
+                    <span flex></span>
+                </md-input-container>
+
+            </md-content>
+
+        </md-dialog-content>
+
+    </form>
+
+</md-dialog>

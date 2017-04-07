@@ -68,7 +68,7 @@ router.get( '/track', function( req, res ) { // { id: STRING }
 
     } );
 
-router.post( '/track', function( req, res ) { // { id: STRING, title: STRING, album: STRING, author: STRING, begin: NUMBER, end: NUMBER }
+router.post( '/track', function( req, res ) { // { id: STRING, title: STRING, album: STRING, author: STRING, begin: NUMBER, end: NUMBER, rate: NUMBER }
 
     if ( !auth.validate(req) ) {
 
@@ -94,15 +94,15 @@ router.post( '/track', function( req, res ) { // { id: STRING, title: STRING, al
 
     if ( typeof( req.body.title ) !== 'undefined' ) {
 
-        Track.obj.title = req.body.title; }
+        Track.obj.title = req.body.title.substr( 0, 256 ); }
 
     if ( typeof( req.body.album ) !== 'undefined' ) {
 
-        Track.obj.album = req.body.album; }
+        Track.obj.album = req.body.album.substr( 0, 256 ); }
 
     if ( typeof( req.body.author ) !== 'undefined' ) {
 
-        Track.obj.author = req.body.author; }
+        Track.obj.author = req.body.author.substr( 0, 256 ); }
 
     if ( typeof( req.body.begin ) !== 'undefined' ) {
 
@@ -111,6 +111,25 @@ router.post( '/track', function( req, res ) { // { id: STRING, title: STRING, al
     if ( typeof( req.body.end ) !== 'undefined' ) {
 
         Track.obj.end = req.body.end; }
+
+    if ( typeof( req.body.rate ) !== 'undefined' ) {
+
+        Track.obj.rate = req.body.rate; }
+
+    if ( Track.obj.end < Track.obj.begin ) {
+
+        var Temporary = Track.obj.end;
+
+        Track.obj.end = Track.obj.begin;
+        Track.obj.begin = Temporary; }
+
+    if ( Track.obj.rate < 0 || Track.obj.rate > 10 ) {
+
+        Track.obj.rate = 5; }
+
+    if ( Track.obj.rate !== Math.floor( Track.obj.rate ) ) {
+
+        Track.obj.rate = Math.floor( Track.obj.rate ); }
 
     var Catalog = db.sread('LIB-CATALOG');
 

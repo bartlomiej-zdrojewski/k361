@@ -1,5 +1,14 @@
 --------------------------------------------------
 
+ATH-PASSWORD: {
+
+    password: STRING,
+    timestamp DATE
+
+    }
+
+--------------------------------------------------
+
 LIB-CATALOG: {
 
     catalog: [ // ALL TRACKS WITH 'READY' STATE
@@ -36,7 +45,7 @@ LIB-TRACK-XXX: {
     begin: NUMBER,
     end: NUMBER,
 
-    rate: NUMBER, // FROM 1 TO 10
+    rate: NUMBER, // FROM 0 TO 10
     views: NUMBER,
 
     path: PATH,
@@ -45,3 +54,18 @@ LIB-TRACK-XXX: {
     }
 
 --------------------------------------------------
+
+PLT-SCHEDULE: {
+
+    schedule: {
+
+        // ...
+
+        }
+
+    timestamp: DATE
+
+    }
+
+--------------------------------------------------
+

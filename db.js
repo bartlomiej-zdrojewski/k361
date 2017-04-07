@@ -28,7 +28,7 @@ db.reset = function ( ) {
     db.dmem = [];
     db.smem = [
 
-        { id: "ATH-PASSWORD", obj: { data: "", timestamp: Date.now() } },
+        { id: "ATH-PASSWORD", obj: { password: "", timestamp: Date.now() } },
         { id: "LIB-CATALOG", obj: { catalog: [], tracks: [], timestamp: Date.now() } }
         // TODO: SETTINGS
 

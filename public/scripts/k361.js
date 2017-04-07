@@ -25,7 +25,7 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
     $scope.TimeToText = function ( time ) {
 
-        var Text = "";
+        var Text = '';
 
         if ( time >= 3600 ) {
 
@@ -117,7 +117,7 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
             templateUrl: 'k361-create-track.html',
             parent: angular.element( document.body ),
             targetEvent: event,
-            clickOutsideToClose: true,
+            clickOutsideToClose: false,
             fullscreen: true
 
             } ).then(
@@ -200,7 +200,79 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
     $scope.EditTrack = function ( track ) {
 
-        // ...
+        $mdDialog.show( {
+
+            controller: EditTrackController,
+            templateUrl: 'k361-edit-track.html',
+            locals: { track: track },
+            parent: angular.element( document.body ),
+            targetEvent: event,
+            clickOutsideToClose: false,
+            fullscreen: true
+
+            } ).then(
+
+                function ( response ) {
+
+                    if ( response == 'ERROR' ) {
+
+                        $mdToast.show(
+
+                            $mdToast.simple()
+                                .textContent( 'Podczas uzyskiwania danych o ścieżce wystąpił błąd! Spróbuj ponownie.' )
+                                .position( 'bottom right' )
+                                .hideDelay( 5000 )
+
+                            );
+
+                        return; }
+
+                    $http.post( '/library/track', {
+
+                        id: track,
+
+                        title: response.title,
+                        album: response.album,
+                        author: response.author,
+
+                        begin: response.begin,
+                        end: response.end,
+                        rate: response.rate
+
+                        } ).then(
+
+                        function ( response ) {
+
+                            // CODE
+
+                            },
+
+                        function ( response ) {
+
+                            console.log( "ERROR #" + response.status + " IN EDIT_TRACK: " + response.data );
+
+                            $mdToast.show(
+
+                                $mdToast.simple()
+                                    .textContent( 'Podczas edytowania ścieżki wystąpił błąd! Spróbuj ponownie.' )
+                                    .position( 'bottom right' )
+                                    .hideDelay( 5000 )
+
+                                );
+
+                            }
+
+                        );
+
+                    },
+
+                function ( response ) {
+
+                    // NOTHING
+
+                    }
+
+                );
 
         };
 
@@ -393,13 +465,13 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
                             for ( var j = 0; j < $scope.Catalog.length; j++ ) {
 
                                 if ( $scope.Catalog[j].id == response.data.catalog.updated[i].id ) {
-                                    console.log('UPDATE');
+
                                     $scope.Catalog[j] = response.data.catalog.updated[i];
 
                                     Done = true; break; } }
 
                             if ( !Done ) {
-                                console.log('CREATE');
+
                                 $scope.Catalog.push( response.data.catalog.updated[i] ); } }
 
                         for ( var i = 0; i < response.data.catalog.removed.length; i++ ) {
@@ -528,6 +600,8 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                     $interval( $scope.SynchronizeWithServer, $scope.Settings.SynchronizationDelay ); }
 
+                $scope.SearchInCatalog();
+
                 },
 
             function ( response ) {
@@ -608,6 +682,108 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 function CreateTrackController ( $scope, $mdDialog ) {
 
     $scope.YoutubeLink = '';
+
+    $scope.hide = function ( ) {
+
+        $mdDialog.hide();
+
+        };
+
+    $scope.cancel = function ( ) {
+
+        $mdDialog.cancel();
+
+        };
+
+    $scope.respond = function( response ) {
+
+        $mdDialog.hide( response );
+
+        };
+
+    }
+
+function EditTrackController ( $scope, $http, $mdDialog, track ) {
+
+    $scope.TimeToLive = 10;
+    $scope.TrackReady = false;
+
+    $scope.Track = {
+
+        title: '',
+        album: '',
+        author: '',
+
+        length: 36000,
+        begin: 0,
+        end: 0,
+
+        rate: 0
+
+        };
+
+    $scope.TimeToText = function ( time ) {
+
+        var Text = '';
+
+        if ( time > 3600 ) {
+
+            var Hours = String( Math.floor( time / 3600 ) );
+            var Minutes = ( '0' + String( Math.floor( ( time % 3600 ) / 60 ) ) ).substr( -2, 2 );
+            var Seconds = ( '0' + String( Math.floor( time % 60 ) ) ).substr( -2, 2 );
+
+            if ( Hours.length == 1 ) {
+
+                Hours = '0' + Hours; }
+
+            Text = Hours + ':' + Minutes + ':' + Seconds; }
+
+        else {
+
+            var Minutes = ( '0' + String( Math.floor( ( time % 3600 ) / 60 ) ) ).substr( -2, 2 );
+            var Seconds = ( '0' + String( Math.floor( time % 60 ) ) ).substr( -2, 2 );
+
+            Text = Minutes + ':' + Seconds; }
+
+        return Text;
+
+        };
+
+    $scope.Setup = function ( ) {
+
+        $http.get( '/library/track?id=' + track ).then(
+
+            function ( response ) {
+
+                $scope.Track.title = response.data.title;
+                $scope.Track.album = response.data.album;
+                $scope.Track.author = response.data.author;
+                $scope.Track.length = response.data.length;
+                $scope.Track.begin = response.data.begin;
+                $scope.Track.end = response.data.end;
+                $scope.Track.rate = response.data.rate;
+
+                $scope.TrackReady = true;
+
+                },
+
+            function ( response ) {
+
+                if ( $scope.TimeToLive > 0 ) {
+
+                    $scope.Setup();
+
+                    $scope.TimeToLive--; }
+
+                else {
+
+                    $scope.respond('ERROR'); }
+
+                }
+
+            );
+
+        };
 
     $scope.hide = function ( ) {
 

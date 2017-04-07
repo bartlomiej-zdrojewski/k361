@@ -14,7 +14,7 @@ router.post( '/', function( req, res ) { // { password : STRING }
 
         res.status(500).send('Password is inaccessible!'); return; }
 
-    if ( Password.obj.data === req.body.password ) {
+    if ( Password.obj.password === req.body.password ) {
 
         auth.login( shortid.generate(), res ); }
 
