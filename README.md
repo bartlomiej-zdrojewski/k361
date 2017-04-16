@@ -47,7 +47,7 @@ apt-get install -y nodejs
 
 #### Windows
 
-[TODO]
+Copy *ffmpeg.exe* file from *external* directory to *k361* directory.
 
 #### MacOs, Ubuntu and Debian
 
@@ -57,11 +57,15 @@ apt-get install -y nodejs
 
 #### Windows
 
-[TODO]
+Copy *mplayer.exe* file from *external* directory to *k361* directory.
 
 #### MacOs, Ubuntu and Debian
 
-[TODO]
+Type in terminal:
+
+```
+sudo apt-get install mplayer
+```
 
 ### k361
 
@@ -80,7 +84,7 @@ node ./app.js
 
 Now you can open a web browser and go to `localhost`, or if you changed the port, to `localhost:[port]`.
 
-If you want to access the server from different device, you should open there a web browser and go to `[network].[host]:[port]`. For example address `192.168.101:80` represents network `192.168.1.XXX`, host `101` and port `80`. You can simply check the proper network and host values by typing in terminal `ipconfig` and looking at the *IPv4 Address* field.
+If you want to access the server from different device, you should open there a web browser and go to `[network].[host]:[port]`. For example address `192.168.1.101:80` represents network `192.168.1.XXX`, host `101` and port `80`. You can simply check the proper network and host values by typing in terminal `ipconfig` and looking at the *IPv4 Address* field.
 
 You may consider automatically launching a server on system startup. If you are intrested, [see this tutorial](https://www.howtogeek.com/228467/how-to-make-a-program-run-at-startup-on-any-computer/).
 
@@ -109,17 +113,17 @@ node ./app.js
 Now you can open a web browser and go to `localhost`, or if you changed the port, to `localhost:[port]`.
 
 If you want to access the server from different device, you should open there a web browser and go to `[network].[host]:[port]`.
-For example address `192.168.101:80` represents network `192.168.1.XXX`, host `101` and port `80`. You can simply check the proper network and host values by typing in terminal `ifconfig` and looking at the *inet* field.
+For example address `192.168.1.101:80` represents network `192.168.1.XXX`, host `101` and port `80`. You can simply check the proper network and host values by typing in terminal `ifconfig` and looking at the *inet* field.
 
 You may consider automatically launching a server on system startup. If you are intrested, [see this tutorial](https://www.howtogeek.com/228467/how-to-make-a-program-run-at-startup-on-any-computer/).
 
 ## Used software
 
-* [FFmpeg](https://ffmpeg.org/)
-* [MPlayer](http://www.mplayerhq.hu/)
-* [Express](https://expressjs.com/)
 * [NodeJS](https://nodejs.org/en/)
+* [Express](https://expressjs.com/)
 * [AngularJS](https://angularjs.org/)
+* [MPlayer](http://www.mplayerhq.hu/)
+* [FFmpeg](https://ffmpeg.org/)
 
 ## License
 
