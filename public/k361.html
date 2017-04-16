@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css" />
+    <link rel="stylesheet" href="static/angular_material/1.1.0/angular-material.min.css" />
     <link rel="stylesheet" href="styles/k361.css" />
 
     <title>k361</title>
@@ -26,7 +26,7 @@
 
                     <div class="md-toolbar-tools">
 
-                        <h2 flex md-truncate>Nawigacja</h2> <!-- EN: Navigation -->
+                        <h2 style="white-space:nowrap;text-overflow:ellipsis;overflow:hidden;" flex>Nawigacja</h2> <!-- EN: Navigation -->
 
                     </div>
 
@@ -93,7 +93,7 @@
                         <md-progress-circular md-mode="indeterminate" md-diameter="{{ !MobileMode && '80' || '60' }}"></md-progress-circular>
                     </div>
 
-                    <md-button style="bottom:35px;right:35px;position:fixed;" ng-class="{ visible: ( ActiveTab==2 && !MobileMode ) }" class="on-top md-primary md-raised md-fab md-fab-bottom-right" aria-label="Stwórz ścieżkę" ng-click="CreateTrack($event)"> <!-- EN: Create track -->
+                    <md-button ng-style="{ 'transform' : ( ActiveTab==2 && !MobileMode ) && 'scale(1)' || 'scale(0)' }" style="bottom:35px;right:35px;position:fixed" ng-class="{ visible: ( ActiveTab==2 && !MobileMode ) }" class="md-primary md-raised md-fab md-fab-bottom-right fab-top" aria-label="Stwórz ścieżkę" ng-click="CreateTrack($event)"> <!-- EN: Create track -->
                         <md-icon md-svg-icon="images/library-create.svg"></md-icon>
                         <md-tooltip md-direction="left">Stwórz ścieżkę</md-tooltip> <!-- EN: Create track -->
                     </md-button>
@@ -102,10 +102,131 @@
 
                         <md-tab md-active="ActiveTab==1" label="Playlist">
 
-                            <md-content class="md-padding">
-                                <h1 class="md-display-2">Tab One</h1>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla venenatis ante augue. Phasellus volutpat neque ac dui mattis vulputate. Etiam consequat aliquam cursus. In sodales pretium ultrices. Maecenas lectus est, sollicitudin consectetur felis nec, feugiat ultricies mi.</p>
-                            </md-content>
+                            <div id="Playlist" layout="column" layout-align="center none">
+
+                                <div class="controls" md-whiteframe="1" flex>
+
+                                    <div layout="row" layout-sm="column" layout-xs="column">
+
+                                        <div layout="row" layout-align="center center" flex="50" flex-sm="100" flex-xs="100">
+
+                                            <span flex="5"></span>
+
+                                            <md-select style="text-align:center;" ng-model="PlaylistControls.Values.day" placeholder="Dzień" flex> <!-- EN: Day -->
+                                                <md-option ng-value="day" ng-repeat="day in PlaylistControls.Days">{{day}}</md-option>
+                                            </md-select>
+
+                                            <span flex="5"></span>
+
+                                            <md-select style="text-align:center;" ng-model="PlaylistControls.Values.month" placeholder="Miesiąc" flex> <!-- EN: Month -->
+                                                <md-option ng-value="month" ng-repeat="month in PlaylistControls.Months">{{MonthName[month]}}</md-option>
+                                            </md-select>
+
+                                            <span flex="5"></span>
+
+                                            <md-select style="text-align:center;" ng-model="PlaylistControls.Values.year" placeholder="Rok" flex> <!-- EN: Year -->
+                                                <md-option ng-value="year" ng-repeat="year in PlaylistControls.Years">{{year}}</md-option>
+                                            </md-select>
+
+                                            <span flex="5"></span>
+
+                                            <md-select style="text-align:center;" ng-model="PlaylistControls.Values.hours" placeholder="Godziny" flex> <!-- EN: Hours -->
+                                                <md-option ng-value="1">00:00 - 07:00</md-option>
+                                                <md-option ng-value="2">07:00 - 17:00</md-option>
+                                                <md-option ng-value="3">17:00 - 24:00</md-option>
+                                            </md-select>
+
+                                            <span flex="5"></span>
+
+                                        </div>
+
+                                        <div ng-style="{ 'border-left' : ( !$mdMedia('xs') && 'solid 1px rgba(0,0,0,0.12)' || 'none' ), 'border-top' : ( $mdMedia('xs') && 'solid 1px rgba(0,0,0,0.12)' || 'none' ) }" layout="row" layout-align="center center" flex="50" flex-sm="100" flex-xs="100">
+
+                                            <form name="PlaylistControlsForm" layout="row" layout-align="center center" layout-fill>
+
+                                                <span flex="5"></span>
+
+                                                <md-select style="text-align:center;" name="Track" ng-model="PlaylistControls.Values.track" placeholder="Ścieżka" flex> <!-- EN: Track -->
+                                                    <md-option ng-value="track.id" ng-repeat="track in Catalog">{{ ( track.title.length > 23 ) && ( track.title.substr( 0, 20 ) + '...' ) || track.title }} - {{ ( track.author.length > 23 ) && ( track.author.substr( 0, 20 ) + '...' ) || track.author }}</md-option>
+                                                </md-select>
+
+                                                <span flex="5"></span>
+
+                                                <md-select style="text-align:center;" name="Order" ng-model="PlaylistControls.Values.order" placeholder="Kolejność" flex> <!-- EN: Order -->
+                                                    <md-option ng-value="1">o godzinie</md-option> <!-- EN: at hour -->
+                                                    <md-option ng-value="2">po ścieżce</md-option> <!-- EN: after track -->
+                                                    <md-option ng-value="3">przed ścieżką</md-option> <!-- EN: before track -->
+                                                </md-select>
+
+                                                <span flex="5"></span>
+
+                                                <md-input-container style="margin-top:17px;margin-bottom:0;" ng-show="PlaylistControls.Values.order==1" flex>
+                                                    <input style="text-align:center;" name="Time" aria-label="Czas" ng-model="PlaylistControls.Values.value" ng-pattern="/^(([0-1]?[0-9])|(2[0-3])):([0-5][0-9]):([0-5][0-9])$/"> <!-- EN: Time -->
+                                                    <md-tooltip md-direction="bottom">Czas w formacie HH:MM:SS</md-tooltip> <!-- EN: Time in format HH:MM:SS -->
+                                                </md-input-container>
+
+                                                <md-select name="Reference" ng-model="PlaylistControls.Values.value" ng-show="PlaylistControls.Values.order==2||PlaylistControls.Values.order==3" placeholder="Odniesienie" flex> <!-- EN: Reference -->
+                                                    <md-option ng-value="entry.id" ng-repeat="entry in Schedule">{{entry.text}}</md-option>
+                                                </md-select>
+
+                                                <md-input-container style="margin-top:17px;margin-bottom:0;" ng-show="PlaylistControls.Values.order<1||PlaylistControls.Values.order>3" flex>
+                                                    <input aria-label="Puste pole" ng-disabled="true"> <!-- EN: Empty input -->
+                                                </md-input-container>
+
+                                                <span flex="5"></span>
+
+                                                <md-button style="max-width:70px;margin:0;" class="md-primary md-raised" aria-label="Dodaj ścieżkę do playlisty" ng-disabled="!ValidatePlaylistControls()" ng-click="AddTrackToPlaylist()" flex> <!-- EN: Add track to playlist -->
+                                                    Dodaj
+                                                </md-button>
+
+                                                <span flex="5"></span>
+
+                                            </form>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="timeline" md-whiteframe="1" flex>
+
+                                    <md-list flex>
+
+                                        <md-list-item ng-class="{ 'md-2-line' : element.type == 'TRACK' }" ng-repeat="element in Playlist">
+
+                                            <div style="height:48px;line-height:48px;text-align:center;color:rgba(0,0,0,0.36);" ng-show="element.type=='PAUSE'" flex>
+                                                {{ TimeToText(GetTimeFromDate(element.begin),true) }} - {{ TimeToText(GetTimeFromDate(element.end),true) }}
+                                            </div>
+
+                                            <div class="md-list-item-text" ng-show="element.type=='TRACK'" layout="column">
+                                                <h3>{{element.title}}</h3>
+                                                <h4 style="margin: 4px 0 3px;">{{element.author}} - {{element.album}}</h4>
+                                            </div>
+
+                                            <!-- TODO: SWAP, REMOVE -->
+
+                                            <md-icon md-svg-icon="images/playlist-move-up.svg" class="md-secondary" aria-label="Przesuń ścieżkę w górę" ng-show="( element.type == 'TRACK' && element.up != '' )" ng-click="SwapTracksInPlaylist(element.id,element.up)"> <!-- EN: Move track up -->
+                                                <md-tooltip md-direction="bottom">Przesuń ścieżkę w górę</md-tooltip> <!-- EN: Move track up -->
+                                            </md-icon>
+
+                                            <md-icon md-svg-icon="images/playlist-move-down.svg" class="md-secondary" aria-label="Przesuń ścieżkę w dół" ng-show="( element.type == 'TRACK' && element.down != '' )" ng-click="SwapTracksInPlaylist(element.id,element.down)"> <!-- EN: Move track down -->
+                                                <md-tooltip md-direction="bottom">Przesuń ścieżkę w dół</md-tooltip> <!-- EN: Move track down -->
+                                            </md-icon>
+
+                                            <md-icon md-svg-icon="images/playlist-remove.svg" class="md-secondary" aria-label="Usuń ścieżkę" ng-show="element.type=='TRACK'" ng-click="RemoveTrackFromPlaylist(element.id)"> <!-- EN: Remove track -->
+                                                <md-tooltip md-direction="bottom">Usuń ścieżkę</md-tooltip> <!-- EN: Remove track -->
+                                            </md-icon>
+
+                                            <md-divider ng-if="!last"></md-divider>
+
+                                        </md-list-item>
+
+                                    </md-list>
+
+                                </div>
+
+                            </div>
 
                         </md-tab>
 
@@ -128,10 +249,10 @@
                                             <div class="md-list-item-text" layout="column">
                                                 <h3>{{track.title}}</h3>
                                                 <h4 style="margin: 4px 0 3px;">{{track.author}} - {{track.album}}</h4>
-                                                <p style="font-size:12px;">{{ TimeToText(track.length) }}</p>
+                                                <p style="font-size:12px;">{{ TimeToWords(track.length) }}</p>
                                             </div>
 
-                                            <md-icon md-svg-icon="images/library-add-to-playlist.svg" class="md-secondary" aria-label="Dodaj ścieżkę do playlisty" ng-click="AddToPlaylist(track.id)"> <!-- EN: Add track to playlist -->
+                                            <md-icon md-svg-icon="images/library-add-to-playlist.svg" class="md-secondary" aria-label="Dodaj ścieżkę do playlisty" ng-click="SelectTrack(track.id)"> <!-- EN: Add track to playlist -->
                                                 <md-tooltip ng-style="{ 'display' : !MobileMode && 'initial' || 'none' }" md-direction="bottom">Dodaj ścieżkę do playlisty</md-tooltip> <!-- EN: Add track to playlist -->
                                             </md-icon>
 
@@ -178,11 +299,11 @@
 
     </div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+<script src="static/angularjs/1.5.5/angular.min.js"></script>
+<script src="static/angularjs/1.5.5/angular-messages.min.js"></script>
+<script src="static/angularjs/1.5.5/angular-animate.min.js"></script>
+<script src="static/angularjs/1.5.5/angular-aria.min.js"></script>
+<script src="static/angular_material/1.1.0/angular-material.min.js"></script>
 
 <script src="scripts/k361.js"></script>
 

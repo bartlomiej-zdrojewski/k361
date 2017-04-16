@@ -40,7 +40,7 @@ app.locals.PlaylistManager = function ( app, db ) {
 
         db.swrite( 'PLT-SCHEDULE', Schedule.obj ); }
 
-    // TODO
+    // TODO: PLAYLIST MANAGER
 
     };
 

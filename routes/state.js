@@ -39,7 +39,7 @@ router.post( '/synchronize', function( req, res ) { // { catalog: DATE, schedule
 
     if ( !Audio.valid ) {
 
-        res.status(400).send('Audio stream is inaccessible!'); return; }
+        res.status(500).send('Audio stream is inaccessible!'); return; }
 
     var Catalog = db.sread('LIB-CATALOG');
 

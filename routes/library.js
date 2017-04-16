@@ -68,11 +68,17 @@ router.get( '/track', function( req, res ) { // { id: STRING }
 
     } );
 
-router.post( '/track', function( req, res ) { // { id: STRING, title: STRING, album: STRING, author: STRING, begin: NUMBER, end: NUMBER, rate: NUMBER }
+router.post( '/track', function( req, res ) { // { id: STRING, title: STRING, album: STRING, author: STRING, begin: NUMBER, end: NUMBER, volume: NUMBER, rate: NUMBER }
 
     if ( !auth.validate(req) ) {
 
         res.status(401).send('Unauthorized'); return; }
+
+    var Catalog = db.sread('LIB-CATALOG');
+
+    if ( !Catalog.valid ) {
+
+        res.status(500).send('Library catalog is inaccessible!'); return; }
 
     var Track = db.sread( 'LIB-TRACK-' + req.body.id );
 
@@ -92,27 +98,31 @@ router.post( '/track', function( req, res ) { // { id: STRING, title: STRING, al
 
         res.status(400).send('Track is not ready.'); return; }
 
-    if ( typeof( req.body.title ) !== 'undefined' ) {
+    if ( typeof( req.body.title ) != 'undefined' ) {
 
         Track.obj.title = req.body.title.substr( 0, 256 ); }
 
-    if ( typeof( req.body.album ) !== 'undefined' ) {
+    if ( typeof( req.body.album ) != 'undefined' ) {
 
         Track.obj.album = req.body.album.substr( 0, 256 ); }
 
-    if ( typeof( req.body.author ) !== 'undefined' ) {
+    if ( typeof( req.body.author ) != 'undefined' ) {
 
         Track.obj.author = req.body.author.substr( 0, 256 ); }
 
-    if ( typeof( req.body.begin ) !== 'undefined' ) {
+    if ( typeof( req.body.begin ) != 'undefined' ) {
 
         Track.obj.begin = req.body.begin; }
 
-    if ( typeof( req.body.end ) !== 'undefined' ) {
+    if ( typeof( req.body.end ) != 'undefined' ) {
 
         Track.obj.end = req.body.end; }
 
-    if ( typeof( req.body.rate ) !== 'undefined' ) {
+    if ( typeof( req.body.volume ) != 'undefined' ) {
+
+        Track.obj.volume = req.body.volume; }
+
+    if ( typeof( req.body.rate ) != 'undefined' ) {
 
         Track.obj.rate = req.body.rate; }
 
@@ -123,6 +133,10 @@ router.post( '/track', function( req, res ) { // { id: STRING, title: STRING, al
         Track.obj.end = Track.obj.begin;
         Track.obj.begin = Temporary; }
 
+    if ( Track.obj.volume < 0 || Track.obj.volume > 100 ) {
+
+        Track.obj.volume = 100; }
+
     if ( Track.obj.rate < 0 || Track.obj.rate > 10 ) {
 
         Track.obj.rate = 5; }
@@ -130,12 +144,6 @@ router.post( '/track', function( req, res ) { // { id: STRING, title: STRING, al
     if ( Track.obj.rate !== Math.floor( Track.obj.rate ) ) {
 
         Track.obj.rate = Math.floor( Track.obj.rate ); }
-
-    var Catalog = db.sread('LIB-CATALOG');
-
-    if ( !Catalog.valid ) {
-
-        console.log('Library catalog is inaccessible!'); return; }
         
     for ( var i = 0; i < Catalog.obj.catalog.length; i++ ) {
         
@@ -185,7 +193,7 @@ router.post( '/download', function( req, res ) { // { service: STRING, code: STR
 
         if ( !Catalog.valid ) {
 
-            console.log('Library catalog is inaccessible!'); return; }
+            res.status(500).send('Library catalog is inaccessible!'); return; }
 
         var Track = {
 
@@ -199,6 +207,7 @@ router.post( '/download', function( req, res ) { // { service: STRING, code: STR
             begin: 0,
             end: 0,
 
+            volume: 100,
             rate: 5,
             views: 0,
 
@@ -450,11 +459,13 @@ router.get( '/clean', function( req, res ) {
 
                 fs.unlink( 'tracks/' + Track.obj.path , function ( err ) {
 
-                    console.log( 'While deleting file \'tracks/' + Track.obj.path + '\' an error occurred: ' + err );
+                    if ( err ) {
+
+                        console.log( 'While deleting file \'tracks/' + Track.obj.path + '\' an error occurred: ' + err ); }
 
                     } );
 
-                db.sremove( Track.obj.id );
+                db.sremove( 'LIB-TRACK-' + Track.obj.id ); // TODO: DOES IT WORK?
 
                 Catalog.obj.tracks.splice( i, 1 ); } }
 

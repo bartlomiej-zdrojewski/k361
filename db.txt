@@ -14,7 +14,7 @@ LIB-CATALOG: {
     catalog: [ // ALL TRACKS WITH 'READY' STATE
 
         {
-            id: ID,
+            id: STRING, // TRACK ID
             timestamp: DATE, // TIMESTAMP
 
             title: STRING,
@@ -23,9 +23,11 @@ LIB-CATALOG: {
             length: NUMBER
         }
 
+        // ...
+
         ],
 
-    tracks: [ ID ], // ID'S OF ALL TRACKS
+    tracks: [ STRING ], // IDS OF ALL TRACKS
 
     timestamp: DATE
 
@@ -35,7 +37,7 @@ LIB-CATALOG: {
 
 LIB-TRACK-XXX: {
 
-    id: ID,
+    id: STRING,
 
     title: STRING,
     album: STRING,
@@ -45,6 +47,7 @@ LIB-TRACK-XXX: {
     begin: NUMBER,
     end: NUMBER,
 
+    volume: NUMBER, // FROM 0 TO 100
     rate: NUMBER, // FROM 0 TO 10
     views: NUMBER,
 
@@ -57,11 +60,19 @@ LIB-TRACK-XXX: {
 
 PLT-SCHEDULE: {
 
-    schedule: {
+    schedule: [
+
+        {
+            id: STRING, // ENTRY ID
+            track: STRING, // TRACK ID
+
+            begin: DATE,
+            end: DATE
+        }
 
         // ...
 
-        }
+        ]
 
     timestamp: DATE
 

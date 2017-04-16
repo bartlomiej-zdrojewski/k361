@@ -13,3 +13,5 @@ node_modules/
 ffmpeg.exe
 mplayer.exe
 mplayer/
+!external/ffmpeg.exe
+!external/mplayer.exe

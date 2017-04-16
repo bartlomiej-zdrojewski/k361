@@ -48,17 +48,41 @@ html {
 
     }
 
-.on-top {
+.fab-top {
 
     transform: scale(0);
     transition: transform 0.3s ease-in;
 
     }
 
-.on-top.visible {
+.fab-top.visible {
 
     transform: scale(1);
     transition: transform 0.3s ease-in;
+
+    }
+
+#Playlist .controls {
+
+    margin: 20px;
+
+    border-radius: 2px;
+    background-color: #FFFFFF;
+
+    }
+
+#Playlist .timeline {
+
+    margin: 0 20px 20px 20px;
+
+    border-radius: 2px;
+    background-color: #FFFFFF;
+
+    }
+
+#Playlist .timeline md-list {
+
+    padding: 0;
 
     }
 

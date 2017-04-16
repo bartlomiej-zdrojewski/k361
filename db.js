@@ -47,7 +47,7 @@ db.swap = function ( mem, i, j ) {
 
     };
 
-db.read = function ( mem, id ) {
+db.read = function ( mem, id ) { // TODO: CHANGE TO BINARY SEARCH
 
     if ( id === undefined || id === '' ) {
 
@@ -72,7 +72,7 @@ db.read = function ( mem, id ) {
 
     };
 
-db.write = function ( mem, id, obj ) {
+db.write = function ( mem, id, obj ) { // TODO: CHANGE TO BINARY SEARCH
 
     if ( id === undefined || id === '' ) {
 
@@ -94,7 +94,7 @@ db.write = function ( mem, id, obj ) {
 
     };
 
-db.remove = function ( mem, id ) {
+db.remove = function ( mem, id ) { // TODO: CHANGE TO BINARY SEARCH
 
     if ( id === undefined || id === '' ) {
 

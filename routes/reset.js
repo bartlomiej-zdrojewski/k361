@@ -38,7 +38,9 @@ router.get( '/', function( req, res ) {
 
                         fs.unlink( 'tracks/' + Track.obj.path , function ( err ) {
 
-                            console.log( 'While deleting file \'tracks/' + Track.obj.path + '\' an error occurred: ' + err );
+                            if ( err ) {
+
+                                console.log( 'While deleting file \'tracks/' + Track.obj.path + '\' an error occurred: ' + err ); }
 
                             } ) },
 

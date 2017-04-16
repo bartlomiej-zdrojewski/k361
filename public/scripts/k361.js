@@ -2,18 +2,38 @@
 
 angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).controller( 'Controller', [ '$scope', '$http', '$window', '$interval', '$mdSidenav', '$mdDialog', '$mdToast', '$mdMedia', function ( $scope, $http, $window, $interval, $mdSidenav, $mdDialog, $mdToast, $mdMedia ) {
 
-    $scope.ActiveTab = 2;
+    $scope.$mdMedia = $mdMedia;
+
+    $scope.ActiveTab = 1;
     $scope.ContentReady = false;
     $scope.MobileMode = !$mdMedia('gt-sm');
 
     $scope.SearchText = '';
     $scope.ToolbarText = 'Życie jest lepsze z muzyką!'; // EN: Life's better with music!
 
-    $scope.Audio = {};
-    $scope.Catalog = [];
-    $scope.Downloading = [];
-    $scope.Schedule = [];
-    $scope.Tracks = [];
+    $scope.PlaylistControls = {
+
+        Days: [],
+        Months: [],
+        Years: [],
+        Schedule: [],
+
+        Values: {
+
+            day: 0,
+            month: 0,
+            year: 0,
+            hours: 0,
+
+            track: '',
+            order: 0,
+            value: ''
+
+            },
+
+        Initiated: false
+
+        };
 
     $scope.Synchronization = {
 
@@ -23,7 +43,88 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
         };
 
-    $scope.TimeToText = function ( time ) {
+    $scope.Audio = {};
+    $scope.Catalog = [];
+    $scope.Downloading = [];
+    $scope.Playlist = [];
+    $scope.Schedule = [];
+    $scope.Tracks = [];
+
+    $scope.MonthName = [
+
+        'stycznia',
+        'lutego',
+        'marca',
+        'kwietnia',
+        'maja',
+        'czerwca',
+        'lipca',
+        'sierpnia',
+        'września',
+        'października',
+        'listopada',
+        'grudnia'
+
+        ];
+
+    $scope.ToggleTab = function ( tab ) {
+
+        $scope.ActiveTab = tab;
+
+        };
+
+    $scope.OpenMenu = function ( ) {
+
+        $mdSidenav('left').open();
+
+        };
+
+    $scope.CloseMenu = function ( ) {
+
+        $mdSidenav('left').close();
+
+        };
+
+    $scope.GetDaysInMonth = function ( month, year ) {
+
+        return ( new Date( year, month, 0 ).getDate() ); };
+
+    $scope.GetTimeFromDate = function ( date ) {
+
+        var Time = new Date( date );
+
+        return ( Time.getHours() * 3600 + Time.getMinutes() * 60 + Time.getSeconds() );
+
+        };
+
+    $scope.TimeToText = function ( time, force_hours ) {
+
+        var Text = '';
+
+        if ( time > 3600 || force_hours === true ) {
+
+            var Hours = String( Math.floor( time / 3600 ) );
+            var Minutes = ( '0' + String( Math.floor( ( time % 3600 ) / 60 ) ) ).substr( -2, 2 );
+            var Seconds = ( '0' + String( Math.floor( time % 60 ) ) ).substr( -2, 2 );
+
+            if ( Hours.length == 1 ) {
+
+                Hours = '0' + Hours; }
+
+            Text = Hours + ':' + Minutes + ':' + Seconds; }
+
+        else {
+
+            var Minutes = ( '0' + String( Math.floor( ( time % 3600 ) / 60 ) ) ).substr( -2, 2 );
+            var Seconds = ( '0' + String( Math.floor( time % 60 ) ) ).substr( -2, 2 );
+
+            Text = Minutes + ':' + Seconds; }
+
+        return Text;
+
+        };
+
+    $scope.TimeToWords = function ( time ) {
 
         var Text = '';
 
@@ -77,35 +178,399 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
         };
 
+    $scope.InitPlaylistControls = function ( ) {
+
+        var Time = new Date();
+
+        $scope.PlaylistControls.Values.day = Time.getDate();
+        $scope.PlaylistControls.Values.month = Time.getMonth();
+        $scope.PlaylistControls.Values.year = Time.getFullYear();
+        $scope.PlaylistControls.Values.hours = 2;
+
+        for ( var i = 0; i < 9; i++ ) {
+
+            $scope.PlaylistControls.Years.push( $scope.PlaylistControls.Values.year - 4 + i ); }
+
+        $scope.PlaylistControls.Initiated = true;
+
+        };
+
+    $scope.UpdatePlaylistControls = function ( ) {
+
+        if ( !$scope.PlaylistControls.Initiated ) {
+
+            return; }
+
+        $scope.PlaylistControls.Days = [];
+        $scope.PlaylistControls.Months = [];
+
+        for ( var i = 1; i <= $scope.GetDaysInMonth( $scope.PlaylistControls.Values.month + 1, $scope.PlaylistControls.Values.year ); i++ ) {
+
+            $scope.PlaylistControls.Days.push( i ); }
+
+        for ( var i = 0; i <= 11; i++ ) {
+
+            $scope.PlaylistControls.Months.push( i ); }
+
+        $scope.Playlist = [];
+        $scope.PlaylistControls.Schedule = [];
+
+        if ( $scope.Schedule.length == 0 ) {
+
+            return; }
+
+        var Begin = new Date();
+        var End = new Date();
+
+        if ( $scope.PlaylistControls.Values.hours == 1 ) {
+
+            Begin = new Date( $scope.PlaylistControls.Values.year, $scope.PlaylistControls.Values.month, $scope.PlaylistControls.Values.day, 0, 0, 0 );
+            End = new Date( $scope.PlaylistControls.Values.year, $scope.PlaylistControls.Values.month, $scope.PlaylistControls.Values.day, 7, 0, 0 ); }
+
+        else if ( $scope.PlaylistControls.Values.hours == 2 ) {
+
+            Begin = new Date( $scope.PlaylistControls.Values.year, $scope.PlaylistControls.Values.month, $scope.PlaylistControls.Values.day, 7, 0, 0 );
+            End = new Date( $scope.PlaylistControls.Values.year, $scope.PlaylistControls.Values.month, $scope.PlaylistControls.Values.day, 17, 0, 0 ); }
+
+        else {
+
+            Begin = new Date( $scope.PlaylistControls.Values.year, $scope.PlaylistControls.Values.month, $scope.PlaylistControls.Values.day, 17, 0, 0 );
+            End = new Date( $scope.PlaylistControls.Values.year, $scope.PlaylistControls.Values.month, $scope.PlaylistControls.Values.day, 24, 0, 0 ); }
+
+        var ScheduleLeft = 0;
+        var ScheduleRight = $scope.Schedule.length - 1;
+
+        var a = ScheduleRight;
+        var b = ScheduleLeft;
+
+        // TODO: TEST ->
+
+        while ( a > ScheduleLeft ) {
+
+            var m = Math.floor( ( ScheduleLeft + a ) / 2 );
+
+            if ( $scope.Schedule[m].end < Begin.getTime() ) {
+
+                ScheduleLeft = m + 1; }
+
+            else {
+
+                a = m; } }
+
+        while ( b < ScheduleRight ) {
+
+            var m = Math.floor( ( b + ScheduleRight ) / 2 );
+
+            if ( $scope.Schedule[m].begin > End.getTime() ) {
+
+                ScheduleRight = m - 1; }
+
+            else {
+
+                b = m + 1; } }
+
+        // TODO: -> TEST
+
+        for ( var i = ScheduleLeft; i <= ScheduleRight; i++ ) {
+
+            if ( $scope.Schedule[i].end < Begin.getTime() || $scope.Schedule[i].begin > End.getTime() ) {
+
+                continue; }
+
+            $scope.PlaylistControls.Schedule.push( $scope.Schedule[i] ); }
+
+        if ( $scope.PlaylistControls.Schedule.length == 0 ) {
+
+            return; }
+
+        for ( var i = 0; i < $scope.PlaylistControls.Schedule.length; i++ ) {
+
+            var Element = {
+
+                type: 'TRACK',
+
+                id: $scope.PlaylistControls.Schedule[i].id,
+                title: $scope.PlaylistControls.Schedule[i].title,
+                album: $scope.PlaylistControls.Schedule[i].album,
+                author: $scope.PlaylistControls.Schedule[i].author,
+
+                begin: $scope.PlaylistControls.Schedule[i].begin,
+                end: $scope.PlaylistControls.Schedule[i].end,
+
+                };
+
+            $scope.Playlist.push(Element); }
+
+        if ( $scope.Playlist[0].begin > Begin.getTime() ) {
+
+            var Element = {
+
+                type: 'PAUSE',
+
+                begin: Begin.getTime(),
+                end: $scope.Playlist[0].begin
+
+                };
+
+            $scope.Playlist.unshift(Element); }
+
+        if ( $scope.Playlist[ $scope.Playlist.length - 1 ].end < End.getTime() ) {
+
+            var Element = {
+
+                type: 'PAUSE',
+                begin: $scope.Playlist[ $scope.Playlist.length - 1 ].end,
+                end: End.getTime()
+
+                };
+
+            $scope.Playlist.push(Element); }
+
+        for ( var i = 1; i < $scope.Playlist.length; i++ ) {
+
+            if ( $scope.Playlist[ i - 1 ].end != $scope.Playlist[i].begin ) {
+
+                var Element = {
+
+                    type: 'PAUSE',
+                    begin: $scope.Playlist[ i - 1 ].end,
+                    end: $scope.Playlist[i].begin
+
+                    };
+
+                $scope.Playlist.splice( i, 0, Element ); } }
+
+        for ( var i = 0; i < $scope.Playlist.length; i++ ) {
+
+            if ( $scope.Playlist[i].type == 'TRACK' ) {
+
+                $scope.Playlist[i].up = '';
+                $scope.Playlist[i].down = '';
+
+                if ( i > 0 ) {
+
+                    if ( $scope.Playlist[i-1].type == 'TRACK' ) {
+
+                        $scope.Playlist[i].up = $scope.Playlist[i-1].id; } }
+
+                if ( i < ( $scope.Playlist.length - 1 ) ) {
+
+                    if ( $scope.Playlist[i+1].type == 'TRACK' ) {
+
+                        $scope.Playlist[i].down = $scope.Playlist[i+1].id; } } } }
+
+        };
+
+    $scope.ValidatePlaylistControls = function ( ) {
+
+        if ( $scope.PlaylistControls.Values.track == '' ) {
+
+            return false; }
+
+        if ( $scope.PlaylistControls.Values.order < 1 || $scope.PlaylistControls.Values.order > 3 ) {
+
+            return false; }
+
+        if ( $scope.PlaylistControls.Values.value == '' ) {
+
+            return false; }
+
+        if ( $scope.PlaylistControls.Values.order == 1 ) {
+
+            if ( !$scope.PlaylistControlsForm.Time.$valid ) {
+
+                return false; } }
+
+        else {
+
+            var Found = false;
+
+            for ( var i = 0; i < $scope.PlaylistControls.Schedule.length; i++ ) {
+
+                if ( $scope.PlaylistControls.Schedule[i].id == $scope.PlaylistControls.Values.value ) {
+
+                    Found = true;
+
+                    break; } }
+
+            if ( !Found ) {
+
+                return false; } }
+
+        return true;
+
+        };
+
+    $scope.AddTrackToPlaylist = function ( ) {
+
+        var Direction = 1;
+        var Begin = new Date();
+
+        if ( $scope.PlaylistControls.Values.order == 1 ) {
+
+            var Delta = 0;
+
+            if ( $scope.PlaylistControls.Values.value.length == 7 ) {
+
+                Delta = 1; }
+
+            var Hours = parseInt( $scope.PlaylistControls.Values.value.substr( 0, 2 - Delta ) );
+            var Minutes = parseInt( $scope.PlaylistControls.Values.value.substr( 3 - Delta, 2 ) );
+            var Seconds = parseInt( $scope.PlaylistControls.Values.value.substr( 6 - Delta, 2 ) );
+
+            Begin = new Date( $scope.PlaylistControls.Values.year, $scope.PlaylistControls.Values.month, $scope.PlaylistControls.Values.day, Hours, Minutes, Seconds ); }
+
+        else {
+
+            for ( var i = 0; i < $scope.Schedule.length; i++ ) {
+
+                if ( $scope.Schedule[i].id == $scope.PlaylistControls.Values.value ) {
+
+                    if ( $scope.PlaylistControls.Values.order == 2 ) {
+
+                        Begin = new Date( $scope.Schedule[i].end ); }
+
+                    else {
+
+                        Direction = -1;
+                        Begin = new Date( $scope.Schedule[i].begin ); }
+
+                    break; } } }
+
+        $http.post( '/playlist/add', {
+
+            track: $scope.PlaylistControls.Values.track,
+            begin: Begin.getTime(),
+            direction: Direction
+
+            } ).then(
+
+            function ( response ) {
+
+                // NOTHING
+
+                },
+
+            function ( response ) {
+
+                console.log( "ERROR #" + response.status + " IN ADD_TRACK_TO_PLAYLIST: " + response.data );
+
+                if ( response.status == 409 ) {
+
+                    $mdToast.show(
+
+                        $mdToast.simple()
+                            .textContent( 'Ścieżka jest w konflikcie z inną ścieżką. Wprowadź poprawny czas odtwarzania.' )
+                            .position( 'bottom right' )
+                            .hideDelay( 5000 )
+
+                        );
+
+                    }
+
+                else {
+
+                    $mdToast.show(
+
+                        $mdToast.simple()
+                            .textContent( 'Podczas dodawania ścieżki do playlisty wystąpił błąd! Spróbuj ponownie.' )
+                            .position( 'bottom right' )
+                            .hideDelay( 5000 )
+
+                        );
+
+                    }
+
+                }
+
+            );
+
+        };
+
+    $scope.SwapTracksInPlaylist = function ( first, second ) {
+
+        $http.post( '/playlist/swap', {
+
+            first: first,
+            second: second
+
+            } ).then(
+
+            function ( response ) {
+
+                // NOTHING
+
+                },
+
+            function ( response ) {
+
+                console.log( "ERROR #" + response.status + " IN SWAP_TRACKS_IN_PLAYLIST: " + response.data );
+
+                $mdToast.show(
+
+                    $mdToast.simple()
+                        .textContent( 'Podczas zamieniania kolejności ścieżek wystąpił błąd. Spróbuj ponownie.' )
+                        .position( 'bottom right' )
+                        .hideDelay( 5000 )
+
+                    );
+
+                }
+
+            );
+
+        };
+
+    $scope.RemoveTrackFromPlaylist = function ( track ) {
+
+        $http.post( '/playlist/remove', {
+
+            id: track
+
+            } ).then(
+
+            function ( response ) {
+
+                // NOTHING
+
+                },
+
+            function ( response ) {
+
+                console.log( "ERROR #" + response.status + " IN REMOVE_TRACK_FROM_PLAYLIST: " + response.data );
+
+                $mdToast.show(
+
+                    $mdToast.simple()
+                        .textContent( 'Podczas usuwania ścieżki wystąpił błąd. Spróbuj ponownie.' )
+                        .position( 'bottom right' )
+                        .hideDelay( 5000 )
+
+                    );
+
+                }
+
+            );
+
+        };
+
     $scope.SearchInCatalog = function ( ) {
+
+        $scope.Tracks = [];
 
         if ( $scope.SearchText.length >= 3 ) {
 
-            // ...
+            for ( var i = 0; i < $scope.Catalog.length && $scope.Tracks < 100; i++ ) { // TODO: SHOW SOMETHING AT i >= 100
 
-            }
+                if ( $scope.Catalog[i].title.toLowerCase().search( $scope.SearchText.toLowerCase() ) != -1 ||
+                     $scope.Catalog[i].album.toLowerCase().search( $scope.SearchText.toLowerCase() ) != -1 ||
+                     $scope.Catalog[i].author.toLowerCase().search( $scope.SearchText.toLowerCase() ) != -1 ) {
+
+                    $scope.Tracks.push( $scope.Catalog[i] ); } } }
 
         else {
 
             $scope.Tracks = $scope.Catalog; }
-
-        };
-
-    $scope.ToggleTab = function ( tab ) {
-
-        $scope.ActiveTab = tab;
-
-        };
-
-    $scope.OpenMenu = function ( ) {
-
-        $mdSidenav('left').open();
-
-        };
-
-    $scope.CloseMenu = function ( ) {
-
-        $mdSidenav('left').close();
 
         };
 
@@ -237,6 +702,8 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                         begin: response.begin,
                         end: response.end,
+
+                        volume: response.volume,
                         rate: response.rate
 
                         } ).then(
@@ -278,7 +745,41 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
     $scope.RemoveTrack = function ( track ) {
 
-        // ...
+        $http.post( '/library/remove', {
+
+            id: track
+
+            } ).then(
+
+            function ( response ) {
+
+                // CODE
+
+                },
+
+            function ( response ) {
+
+                console.log( "ERROR #" + response.status + " IN REMOVE_TRACK: " + response.data );
+
+                $mdToast.show(
+
+                    $mdToast.simple()
+                        .textContent( 'Podczas usuwania ścieżki wystąpił błąd! Spróbuj ponownie.' )
+                        .position( 'bottom right' )
+                        .hideDelay( 5000 )
+
+                    );
+
+                }
+
+            );
+
+        };
+
+    $scope.SelectTrack = function ( track ) {
+
+        $scope.ActiveTab = 1;
+        $scope.PlaylistControls.Values.track = track;
 
         };
 
@@ -366,12 +867,6 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
         };
 
-    $scope.AddToPlaylist = function ( track ) {
-
-        // ...
-
-        };
-
     // ...
 
     $scope.Logout = function ( ) {
@@ -428,22 +923,6 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
     $scope.Synchronize = function ( ) {
 
-        $scope.ToolbarText = 'Życie jest lepsze z muzyką!'; // EN: Life's better with music!
-
-        if ( $scope.Audio.playing ) {
-
-            for ( var i = 0; i < $scope.Catalog.length; i++ ) {
-
-                if ( $scope.Catalog[i].id == $scope.Audio.track ) {
-
-                    $scope.ToolbarText = $scope.Catalog[i].title + ' | ' + $scope.Catalog[i].author + ' - ' + $scope.Catalog[i].album;
-
-                    break; } } }
-
-        };
-
-    $scope.SynchronizeWithServer = function ( ) {
-
         $http.post( '/state/synchronize', {
 
             catalog: $scope.Synchronization.catalog,
@@ -457,6 +936,8 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
                     $scope.Audio = response.data.audio;
 
                     if ( response.data.catalog.timestamp > $scope.Synchronization.catalog ) {
+
+                        $scope.Synchronization.catalog = response.data.catalog.timestamp;
 
                         for ( var i = 0; i < response.data.catalog.updated.length; i++ ) {
 
@@ -484,25 +965,81 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                                     break; } } }
 
-                        console.log($scope.Catalog);
+                        $scope.Catalog.sort(
 
-                        $scope.Synchronization.catalog = response.data.catalog.timestamp;
+                            function ( a, b ) {
 
-                        $scope.SearchInCatalog();
+                                if ( a.author < b.author ) {
 
-                        console.log($scope.Tracks); }
+                                    return -1; }
+
+                                if ( a.author > b.author ) {
+
+                                    return 1; }
+
+                                if ( a.album < b.album ) {
+
+                                    return -1; }
+
+                                if ( a.album > b.album ) {
+
+                                    return 1; }
+
+                                if ( a.title < b.title ) {
+
+                                    return -1; }
+
+                                if ( a.title > b.title ) {
+
+                                    return 1; }
+
+                                return 0; } );
+
+                        $scope.SearchInCatalog(); }
 
                     if ( response.data.schedule.timestamp > $scope.Synchronization.schedule ) {
 
                         $scope.Schedule = response.data.schedule.data;
-                        $scope.Synchronization.schedule = response.data.schedule.timestamp; }
+                        $scope.Synchronization.schedule = response.data.schedule.timestamp;
+
+                        for ( var i = 0; i < $scope.Schedule.length; i++ ) {
+
+                            var Title = '';
+                            var Album = '';
+                            var Author = '';
+
+                            for ( var j = 0; j < $scope.Catalog.length; j++ ) {
+
+                                if ( $scope.Catalog[j].id == $scope.Schedule[i].track ) {
+
+                                    Title = $scope.Catalog[j].title;
+                                    Album = $scope.Catalog[j].album;
+                                    Author = $scope.Catalog[j].author;
+
+                                    break; } }
+
+                            $scope.Schedule[i].title = Title;
+                            $scope.Schedule[i].album = Album;
+                            $scope.Schedule[i].author = Author;
+
+                            if ( Title.length > 23 ) {
+
+                                Title = Title.substr( 0, 20 ) + '...'; }
+
+                            if ( Author.length > 23 ) {
+
+                                Author = Author.substr( 0, 20 ) + '...'; }
+
+                            $scope.Schedule[i].text = $scope.TimeToText( $scope.GetTimeFromDate( $scope.Schedule[i].begin ), true ) + ' | ' + Title + ' - ' + Author; }
+
+                        $scope.UpdatePlaylistControls(); }
 
                     if ( response.data.settings.timestamp > $scope.Synchronization.settings ) {
 
                         $scope.Settings = response.data.settings.data;
                         $scope.Synchronization.settings = response.data.settings.timestamp; }
 
-                    $scope.Synchronize();
+                    $scope.SynchronizeToolbar();
 
                     },
 
@@ -578,6 +1115,22 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
         };
 
+    $scope.SynchronizeToolbar = function ( ) {
+
+        $scope.ToolbarText = 'Życie jest lepsze z muzyką!'; // EN: Life's better with music!
+
+        if ( $scope.Audio.playing ) {
+
+            for ( var i = 0; i < $scope.Catalog.length; i++ ) {
+
+                if ( $scope.Catalog[i].id == $scope.Audio.track ) {
+
+                    $scope.ToolbarText = $scope.Catalog[i].title + ' | ' + $scope.Catalog[i].author + ' - ' + $scope.Catalog[i].album;
+
+                    break; } } }
+
+        };
+
     $scope.Setup = function ( ) {
 
         var LibraryReady = false;
@@ -598,9 +1151,71 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                     $scope.ContentReady = true;
 
-                    $interval( $scope.SynchronizeWithServer, $scope.Settings.SynchronizationDelay ); }
+                    $interval( $scope.Synchronize, $scope.Settings.SynchronizationDelay ); }
+
+                $scope.Catalog.sort(
+
+                    function ( a, b ) {
+
+                        if ( a.author < b.author ) {
+
+                            return -1; }
+
+                        if ( a.author > b.author ) {
+
+                            return 1; }
+
+                        if ( a.album < b.album ) {
+
+                            return -1; }
+
+                        if ( a.album > b.album ) {
+
+                            return 1; }
+
+                        if ( a.title < b.title ) {
+
+                            return -1; }
+
+                        if ( a.title > b.title ) {
+
+                            return 1; }
+
+                        return 0; } );
 
                 $scope.SearchInCatalog();
+
+                if ( PlaylistReady ) {
+
+                    for ( var i = 0; i < $scope.Schedule.length; i++ ) {
+
+                        var Title = '';
+                        var Album = '';
+                        var Author = '';
+
+                        for ( var j = 0; j < $scope.Catalog.length; j++ ) {
+
+                            if ( $scope.Catalog[j].id == $scope.Schedule[i].track ) {
+
+                                Title = $scope.Catalog[j].title;
+                                Album = $scope.Catalog[j].album;
+                                Author = $scope.Catalog[j].author;
+
+                                break; } }
+
+                        $scope.Schedule[i].title = Title;
+                        $scope.Schedule[i].album = Album;
+                        $scope.Schedule[i].author = Author;
+
+                        if ( Title.length > 23 ) {
+
+                            Title = Title.substr( 0, 20 ) + '...'; }
+
+                        if ( Author.length > 23 ) {
+
+                            Author = Author.substr( 0, 20 ) + '...'; }
+
+                        $scope.Schedule[i].text = $scope.TimeToText( $scope.GetTimeFromDate( $scope.Schedule[i].begin ), true ) + ' | ' + Title + ' - ' + Author; } }
 
                 },
 
@@ -628,7 +1243,41 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                     $scope.ContentReady = true;
 
-                    $interval( $scope.SynchronizeWithServer, $scope.Settings.SynchronizationDelay ); }
+                    $interval( $scope.Synchronize, $scope.Settings.SynchronizationDelay ); }
+
+                $scope.InitPlaylistControls();
+
+                if ( LibraryReady ) {
+
+                    for ( var i = 0; i < $scope.Schedule.length; i++ ) {
+
+                        var Title = '';
+                        var Album = '';
+                        var Author = '';
+
+                        for ( var j = 0; j < $scope.Catalog.length; j++ ) {
+
+                            if ( $scope.Catalog[j].id == $scope.Schedule[i].track ) {
+
+                                Title = $scope.Catalog[j].title;
+                                Album = $scope.Catalog[j].album;
+                                Author = $scope.Catalog[j].author;
+
+                                break; } }
+
+                        $scope.Schedule[i].title = Title;
+                        $scope.Schedule[i].album = Album;
+                        $scope.Schedule[i].author = Author;
+
+                        if ( Title.length > 23 ) {
+
+                            Title = Title.substr( 0, 20 ) + '...'; }
+
+                        if ( Author.length > 23 ) {
+
+                            Author = Author.substr( 0, 20 ) + '...'; }
+
+                        $scope.Schedule[i].text = $scope.TimeToText( $scope.GetTimeFromDate( $scope.Schedule[i].begin ), true ) + ' | ' + Title + ' - ' + Author; } }
 
                 },
 
@@ -655,7 +1304,7 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                     $scope.ContentReady = true;
 
-                    $interval( $scope.SynchronizeWithServer, $scope.Settings.SynchronizationDelay ); }
+                    $interval( $scope.Synchronize, $scope.Settings.SynchronizationDelay ); }
 
                 },
 
@@ -676,6 +1325,12 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
         $scope.MobileMode = !DesktopMode;
 
         } );
+
+    $scope.$watch( function ( ) { return $scope.PlaylistControls.Values; }, function ( ) {
+
+        $scope.UpdatePlaylistControls();
+
+        }, true );
 
     } ] );
 
@@ -718,6 +1373,7 @@ function EditTrackController ( $scope, $http, $mdDialog, track ) {
         begin: 0,
         end: 0,
 
+        volume: 0,
         rate: 0
 
         };
@@ -761,6 +1417,7 @@ function EditTrackController ( $scope, $http, $mdDialog, track ) {
                 $scope.Track.length = response.data.length;
                 $scope.Track.begin = response.data.begin;
                 $scope.Track.end = response.data.end;
+                $scope.Track.volume = response.data.volume;
                 $scope.Track.rate = response.data.rate;
 
                 $scope.TrackReady = true;
