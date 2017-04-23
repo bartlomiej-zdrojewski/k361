@@ -98,33 +98,41 @@ router.post( '/track', function( req, res ) { // { id: STRING, title: STRING, al
 
         res.status(400).send('Track is not ready.'); return; }
 
-    if ( typeof( req.body.title ) != 'undefined' ) {
+    if ( typeof( req.body.title ) == 'string' ) {
 
         Track.obj.title = req.body.title.substr( 0, 256 ); }
 
-    if ( typeof( req.body.album ) != 'undefined' ) {
+    if ( typeof( req.body.album ) == 'string' ) {
 
         Track.obj.album = req.body.album.substr( 0, 256 ); }
 
-    if ( typeof( req.body.author ) != 'undefined' ) {
+    if ( typeof( req.body.author ) == 'string' ) {
 
         Track.obj.author = req.body.author.substr( 0, 256 ); }
 
-    if ( typeof( req.body.begin ) != 'undefined' ) {
+    if ( typeof( req.body.begin ) == 'number' ) {
 
-        Track.obj.begin = req.body.begin; }
+        Track.obj.begin = Math.floor( req.body.begin ); }
 
-    if ( typeof( req.body.end ) != 'undefined' ) {
+    if ( typeof( req.body.end ) == 'number' ) {
 
-        Track.obj.end = req.body.end; }
+        Track.obj.end = Math.floor( req.body.end ); }
 
-    if ( typeof( req.body.volume ) != 'undefined' ) {
+    if ( typeof( req.body.volume ) == 'number' ) {
 
-        Track.obj.volume = req.body.volume; }
+        Track.obj.volume = Math.floor( req.body.volume ); }
 
-    if ( typeof( req.body.rate ) != 'undefined' ) {
+    if ( typeof( req.body.rate ) == 'number' ) {
 
-        Track.obj.rate = req.body.rate; }
+        Track.obj.rate = Math.floor( req.body.rate ); }
+
+    if ( Track.obj.begin < 0 ) {
+
+        Track.obj.begin = 0; }
+
+    if ( Track.obj.end > Track.obj.length ) {
+
+        Track.obj.end = Track.obj.length; }
 
     if ( Track.obj.end < Track.obj.begin ) {
 
@@ -239,7 +247,7 @@ router.post( '/download', function( req, res ) { // { service: STRING, code: STR
 
                 if ( !Catalog.valid ) {
 
-                    console.log( 'While downloading track #' + Track.id + ' an error occurred: library catalog is inaccessible' ); return; }
+                    console.log( 'While downloading track #' + Track.id + ' an error occurred: Library catalog is inaccessible!' ); return; }
 
                 youtubeInfo( req.body.code, function ( err, videoInfo ) {
 
@@ -276,35 +284,39 @@ router.post( '/download', function( req, res ) { // { service: STRING, code: STR
 
                             } );
 
-                        throw err; }
+                        console.log( 'While obtaining track info from Youtube an error occurred: ' + err ); }
 
-                    var Timestamp = Date.now();
+                    else {
 
-                    Track.title = videoInfo.title;
-                    Track.album = 'Youtube';
-                    Track.author = videoInfo.owner;
-                    Track.length = videoInfo.duration;
-                    Track.end = Track.length;
+                        var Timestamp = Date.now();
 
-                    Catalog.obj.catalog.push( {
+                        Track.title = videoInfo.title;
+                        Track.album = 'Youtube';
+                        Track.author = videoInfo.owner;
+                        Track.length = videoInfo.duration;
+                        Track.end = Track.length;
 
-                        id: Track.id,
-                        timestamp: Timestamp,
+                        Catalog.obj.catalog.push( {
 
-                        title: Track.title,
-                        album: Track.album,
-                        author: Track.author,
-                        length: Track.length
+                            id: Track.id,
+                            timestamp: Timestamp,
 
-                        } );
+                            title: Track.title,
+                            album: Track.album,
+                            author: Track.author,
+                            length: Track.length
 
-                    Catalog.obj.timestamp = Timestamp;
+                            } );
 
-                    db.swrite( 'LIB-TRACK-' + Track.id, Track, function ( ) {
+                        Catalog.obj.timestamp = Timestamp;
 
-                        db.swrite( 'LIB-CATALOG', Catalog.obj );
+                        db.swrite( 'LIB-TRACK-' + Track.id, Track, function ( ) {
 
-                        } );
+                            db.swrite( 'LIB-CATALOG', Catalog.obj );
+
+                            } );
+
+                        }
 
                     } );
 
@@ -447,7 +459,7 @@ router.get( '/clean', function( req, res ) {
 
         res.status(500).send('Library catalog is inaccessible!'); return; }
 
-    console.log('Cleaning the library from garbage');
+    console.log('Cleaning library');
 
     for ( var i = 0; i < Catalog.obj.tracks.length; i++ ) {
 
@@ -465,7 +477,7 @@ router.get( '/clean', function( req, res ) {
 
                     } );
 
-                db.sremove( 'LIB-TRACK-' + Track.obj.id ); // TODO: DOES IT WORK?
+                db.sremove( 'LIB-TRACK-' + Track.obj.id ); // TODO: TEST AND FIX
 
                 Catalog.obj.tracks.splice( i, 1 ); } }
 

@@ -126,6 +126,40 @@ html {
 
     }
 
+#Settings .frame {
+
+    margin: 20px;
+    padding: 10px;
+
+    box-sizing: border-box;
+
+    border-radius: 2px;
+    background-color: #FFFFFF;
+
+    }
+
+#Settings .frame h2 {
+
+    margin-top: 15px;
+    margin-bottom: 10px;
+
+    font-size: 20px;
+
+    }
+
+#Settings .frame ul {
+
+    margin: 10px 0 0 0;
+    padding-left: 20px;
+
+    }
+
+#Settings .frame md-input-container .md-errors-spacer {
+
+    min-height: 0;
+
+    }
+
 .hide-tab-bar md-tabs-wrapper {
 
     display: none;

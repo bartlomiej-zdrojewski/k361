@@ -80,3 +80,36 @@ PLT-SCHEDULE: {
 
 --------------------------------------------------
 
+STE-SETTINGS: {
+
+    settings: {
+
+        playlist_designer: BOOLEAN,
+        playlist_designer_launch_time: NUMBER, // FROM 0 TO 86399
+        synchronization_delay: NUMBER, // FROM 100 TO 5000
+
+        playlist_designer_time_intervals: [
+
+            days: [ NUMBER ], // FROM 0 TO 6
+
+            begin: NUMBER, // FROM 0 TO 86399
+            end: NUMBER // FROM 0 TO 86399
+
+            ],
+
+        reserved_time_intervals: [
+
+            days: [ NUMBER ], // FROM 0 TO 6
+
+            begin: NUMBER, // FROM 0 TO 86399
+            end: NUMBER // FROM 0 TO 86399
+
+            ]
+
+        }
+
+    timestamp: DATE
+
+    }
+
+--------------------------------------------------

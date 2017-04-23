@@ -35,21 +35,25 @@ router.post( '/play', function( req, res ) {
 
         res.status(401).send('Unauthorized'); return; }
 
+    if ( req.app.locals.GetAudioAccessPermission( db ) ) {
+
+        res.status(409).send('Track must not be played during reserved time intervals.'); return; }
+
     var Track = db.sread( 'LIB-TRACK-' + req.body.id );
 
     if ( !Track.valid ) {
 
         res.status(400).send('Track has not been found.'); return; }
 
-    if ( Track.obj.state === 'ERROR' ) {
+    if ( Track.obj.state == 'ERROR' ) {
 
         res.status(400).send('Track is corrupted.'); return; }
 
-    else if ( Track.obj.state === 'REMOVED' ) {
+    else if ( Track.obj.state == 'REMOVED' ) {
 
         res.status(400).send('Track was removed.'); return; }
 
-    else if ( Track.obj.state !== 'READY' ) {
+    else if ( Track.obj.state != 'READY' ) {
 
         res.status(400).send('Track is not ready.'); return; }
 
@@ -76,7 +80,7 @@ router.post( '/play', function( req, res ) {
 
                 db.dwrite( 'PLT-AUDIO', Audio.obj ); }
 
-            throw err; }
+            console.log( 'While playing track an error occurred: ' + err ); }
 
         } );
 
@@ -99,7 +103,7 @@ router.post( '/play', function( req, res ) {
 
             db.dwrite( 'PLT-AUDIO', Audio.obj ); }
 
-        req.app.locals.PlaylistManager( req.app, db );
+        req.app.locals.PlaylistManager( req.app, db, player );
 
         }, ( Track.obj.end - Track.obj.begin ) * 1000 );
 
@@ -128,7 +132,7 @@ router.post( '/stop', function( req, res ) {
 
         db.dwrite( 'PLT-AUDIO', Audio.obj ); }
 
-    req.app.locals.PlaylistManager( req.app, db );
+    req.app.locals.PlaylistManager( req.app, db, player );
 
     res.sendStatus(200);
 
@@ -235,7 +239,7 @@ router.post( '/add', function( req, res ) { // { track: STRING, begin: DATE, dir
 
     if ( !Audio.obj.playing ) {
 
-        req.app.locals.PlaylistManager( req.app, db ); }
+        req.app.locals.PlaylistManager( req.app, db, player ); }
 
     res.sendStatus(200);
 
@@ -272,7 +276,7 @@ router.post( '/swap', function( req, res ) { // { first: STRING, second: STRING 
 
     if ( a < 0 ) {
 
-        res.status(400).send('Schedule entry has not been found.'); return; }
+        res.status(400).send('Playlist schedule entry has not been found.'); return; }
 
     if ( a < ( Schedule.obj.schedule.length - 1 ) ) {
 
@@ -289,11 +293,11 @@ router.post( '/swap', function( req, res ) { // { first: STRING, second: STRING 
 
     if ( b < 0 ) {
 
-        res.status(400).send('Schedule entries are not located next to each other.'); return; }
+        res.status(400).send('Playlist schedule entries are not located next to each other.'); return; }
 
     if ( Schedule.obj.schedule[a].end != Schedule.obj.schedule[b].begin ) {
 
-        res.status(400).send('Schedule entries are not connected.'); return; }
+        res.status(400).send('Playlist schedule entries are not connected.'); return; }
 
     var f = {
 
@@ -323,7 +327,7 @@ router.post( '/swap', function( req, res ) { // { first: STRING, second: STRING 
 
     if ( !Audio.obj.playing ) {
 
-        req.app.locals.PlaylistManager( req.app, db ); }
+        req.app.locals.PlaylistManager( req.app, db, player ); }
 
     res.sendStatus(200);
 
@@ -359,7 +363,7 @@ router.post( '/remove', function( req, res ) { // { id: STRING }
 
     if ( Index < 0 ) {
 
-        res.status(400).send('Schedule entry has not been found.'); return; }
+        res.status(400).send('Playlist schedule entry has not been found.'); return; }
 
     Schedule.obj.timestamp = Date.now();
     Schedule.obj.schedule.splice( Index, 1 );
@@ -368,7 +372,46 @@ router.post( '/remove', function( req, res ) { // { id: STRING }
 
     if ( !Audio.obj.playing ) {
 
-        req.app.locals.PlaylistManager( req.app, db ); }
+        req.app.locals.PlaylistManager( req.app, db, player ); }
+
+    res.sendStatus(200);
+
+    } );
+
+router.get( '/clean', function( req, res ) {
+
+    if ( !auth.validate(req) ) {
+
+        res.status(401).send('Unauthorized'); return; }
+
+    var Audio = db.dread( 'PLT-AUDIO' );
+
+    if ( Audio.valid ) {
+
+        if ( Audio.obj.playing ) {
+
+            Audio.obj.stream.kill(); } }
+
+    var Schedule = db.sread( 'PLT-SCHEDULE' );
+
+    if ( !Schedule.valid ) {
+
+        res.status(500).send('Playlist schedule is inaccessible!'); return; }
+
+    console.log('Cleaning playlist schedule');
+
+    var Now = Date.now();
+
+    for ( var i = 0; i < Schedule.obj.schedule.length; i++ ) {
+
+        if ( Schedule.obj.schedule[i].end < Now ) {
+
+            Schedule.obj.schedule.splice( i, 1 ); i--; } }
+
+    db.dwrite( 'PLT-AUDIO', { stream: {}, playing: false, track: '' } );
+    db.swrite( 'PLT-SCHEDULE', { schedule: Schedule.obj.schedule, timestamp: Date.now() } );
+
+    req.app.locals.PlaylistManager( req.app, db, player );
 
     res.sendStatus(200);
 

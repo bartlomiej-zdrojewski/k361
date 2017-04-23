@@ -4,7 +4,7 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
     $scope.$mdMedia = $mdMedia;
 
-    $scope.ActiveTab = 1;
+    $scope.ActiveTab = 3;
     $scope.ContentReady = false;
     $scope.MobileMode = !$mdMedia('gt-sm');
 
@@ -35,6 +35,13 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
         };
 
+    $scope.SettingsBuffer = {
+
+        hold: false,
+        playlist_designer_launch_time: '00:00:00'
+
+        };
+
     $scope.Synchronization = {
 
         catalog: 0,
@@ -48,6 +55,7 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
     $scope.Downloading = [];
     $scope.Playlist = [];
     $scope.Schedule = [];
+    $scope.Settings = {};
     $scope.Tracks = [];
 
     $scope.MonthName = [
@@ -185,7 +193,18 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
         $scope.PlaylistControls.Values.day = Time.getDate();
         $scope.PlaylistControls.Values.month = Time.getMonth();
         $scope.PlaylistControls.Values.year = Time.getFullYear();
-        $scope.PlaylistControls.Values.hours = 2;
+
+        if ( Time.getHours() < 7 ) {
+
+            $scope.PlaylistControls.Values.hours = 1; }
+
+        else if ( Time.getHours() < 17 ) {
+
+            $scope.PlaylistControls.Values.hours = 2; }
+
+        else {
+
+            $scope.PlaylistControls.Values.hours = 3; }
 
         for ( var i = 0; i < 9; i++ ) {
 
@@ -445,45 +464,45 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
             } ).then(
 
-            function ( response ) {
+                function ( response ) {
 
-                // NOTHING
+                    // NOTHING
 
-                },
+                    },
 
-            function ( response ) {
+                function ( response ) {
 
-                console.log( "ERROR #" + response.status + " IN ADD_TRACK_TO_PLAYLIST: " + response.data );
+                    console.log( "ERROR #" + response.status + " IN ADD_TRACK_TO_PLAYLIST: " + response.data );
 
-                if ( response.status == 409 ) {
+                    if ( response.status == 409 ) {
 
-                    $mdToast.show(
+                        $mdToast.show(
 
-                        $mdToast.simple()
-                            .textContent( 'Ścieżka jest w konflikcie z inną ścieżką. Wprowadź poprawny czas odtwarzania.' )
-                            .position( 'bottom right' )
-                            .hideDelay( 5000 )
+                            $mdToast.simple()
+                                .textContent( 'Ścieżka jest w konflikcie z inną ścieżką. Wprowadź poprawny czas odtwarzania.' )
+                                .position( 'bottom right' )
+                                .hideDelay( 5000 )
 
-                        );
+                            );
+
+                        }
+
+                    else {
+
+                        $mdToast.show(
+
+                            $mdToast.simple()
+                                .textContent( 'Podczas dodawania ścieżki do playlisty wystąpił błąd! Spróbuj ponownie.' )
+                                .position( 'bottom right' )
+                                .hideDelay( 5000 )
+
+                            );
+
+                        }
 
                     }
 
-                else {
-
-                    $mdToast.show(
-
-                        $mdToast.simple()
-                            .textContent( 'Podczas dodawania ścieżki do playlisty wystąpił błąd! Spróbuj ponownie.' )
-                            .position( 'bottom right' )
-                            .hideDelay( 5000 )
-
-                        );
-
-                    }
-
-                }
-
-            );
+                );
 
         };
 
@@ -496,28 +515,28 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
             } ).then(
 
-            function ( response ) {
+                function ( response ) {
 
-                // NOTHING
+                    // NOTHING
 
-                },
+                    },
 
-            function ( response ) {
+                function ( response ) {
 
-                console.log( "ERROR #" + response.status + " IN SWAP_TRACKS_IN_PLAYLIST: " + response.data );
+                    console.log( "ERROR #" + response.status + " IN SWAP_TRACKS_IN_PLAYLIST: " + response.data );
 
-                $mdToast.show(
+                    $mdToast.show(
 
-                    $mdToast.simple()
-                        .textContent( 'Podczas zamieniania kolejności ścieżek wystąpił błąd. Spróbuj ponownie.' )
-                        .position( 'bottom right' )
-                        .hideDelay( 5000 )
+                        $mdToast.simple()
+                            .textContent( 'Podczas zamieniania kolejności ścieżek wystąpił błąd. Spróbuj ponownie.' )
+                            .position( 'bottom right' )
+                            .hideDelay( 5000 )
 
-                    );
+                        );
 
-                }
+                    }
 
-            );
+                );
 
         };
 
@@ -529,28 +548,28 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
             } ).then(
 
-            function ( response ) {
+                function ( response ) {
 
-                // NOTHING
+                    // NOTHING
 
-                },
+                    },
 
-            function ( response ) {
+                function ( response ) {
 
-                console.log( "ERROR #" + response.status + " IN REMOVE_TRACK_FROM_PLAYLIST: " + response.data );
+                    console.log( "ERROR #" + response.status + " IN REMOVE_TRACK_FROM_PLAYLIST: " + response.data );
 
-                $mdToast.show(
+                    $mdToast.show(
 
-                    $mdToast.simple()
-                        .textContent( 'Podczas usuwania ścieżki wystąpił błąd. Spróbuj ponownie.' )
-                        .position( 'bottom right' )
-                        .hideDelay( 5000 )
+                        $mdToast.simple()
+                            .textContent( 'Podczas usuwania ścieżki wystąpił błąd. Spróbuj ponownie.' )
+                            .position( 'bottom right' )
+                            .hideDelay( 5000 )
 
-                    );
+                        );
 
-                }
+                    }
 
-            );
+                );
 
         };
 
@@ -602,37 +621,37 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                                 } ).then(
 
-                                function ( response ) {
+                                    function ( response ) {
 
-                                    $scope.Downloading.push( response.data );
+                                        $scope.Downloading.push( response.data );
 
-                                    $mdToast.show(
+                                        $mdToast.show(
 
-                                        $mdToast.simple()
-                                            .textContent( 'Ścieżka #' + response.data + " zostanie wkrótce pobrana!" )
-                                            .position( 'bottom right' )
-                                            .hideDelay( 3000 )
+                                            $mdToast.simple()
+                                                .textContent( 'Ścieżka #' + response.data + " zostanie wkrótce pobrana!" )
+                                                .position( 'bottom right' )
+                                                .hideDelay( 3000 )
 
-                                        );
+                                            );
 
-                                    },
+                                        },
 
-                                function ( response ) {
+                                    function ( response ) {
 
-                                    console.log( "ERROR #" + response.status + " IN CREATE_TRACK: " + response.data );
+                                        console.log( "ERROR #" + response.status + " IN CREATE_TRACK: " + response.data );
 
-                                    $mdToast.show(
+                                        $mdToast.show(
 
-                                        $mdToast.simple()
-                                            .textContent( 'Podczas tworzenia ścieżki wystąpił błąd! Spróbuj ponownie.' )
-                                            .position( 'bottom right' )
-                                            .hideDelay( 5000 )
+                                            $mdToast.simple()
+                                                .textContent( 'Podczas tworzenia ścieżki wystąpił błąd! Spróbuj ponownie.' )
+                                                .position( 'bottom right' )
+                                                .hideDelay( 5000 )
 
-                                        );
+                                            );
 
-                                    }
+                                        }
 
-                                );
+                                    );
 
                             }
 
@@ -708,28 +727,28 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                         } ).then(
 
-                        function ( response ) {
+                            function ( response ) {
 
-                            // CODE
+                                // CODE
 
-                            },
+                                },
 
-                        function ( response ) {
+                            function ( response ) {
 
-                            console.log( "ERROR #" + response.status + " IN EDIT_TRACK: " + response.data );
+                                console.log( "ERROR #" + response.status + " IN EDIT_TRACK: " + response.data );
 
-                            $mdToast.show(
+                                $mdToast.show(
 
-                                $mdToast.simple()
-                                    .textContent( 'Podczas edytowania ścieżki wystąpił błąd! Spróbuj ponownie.' )
-                                    .position( 'bottom right' )
-                                    .hideDelay( 5000 )
+                                    $mdToast.simple()
+                                        .textContent( 'Podczas edytowania ścieżki wystąpił błąd! Spróbuj ponownie.' )
+                                        .position( 'bottom right' )
+                                        .hideDelay( 5000 )
 
-                                );
+                                    );
 
-                            }
+                                }
 
-                        );
+                            );
 
                     },
 
@@ -783,19 +802,19 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
         };
 
-    $scope.ToggleNow = function ( track ) {
+    $scope.ToggleTrack = function ( track ) {
 
         if ( $scope.Audio.playing && $scope.Audio.track == track ) {
 
-            $scope.StopNow( track ); }
+            $scope.StopTrack( track ); }
 
         else {
 
-            $scope.PlayNow( track ); }
+            $scope.PlayTrack( track ); }
 
         };
 
-    $scope.PlayNow = function ( track ) {
+    $scope.PlayTrack = function ( track ) {
 
         $http.post( '/playlist/play', {
 
@@ -816,14 +835,31 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                     console.log( "ERROR #" + response.status + " IN PLAY_NOW: " + response.data );
 
-                    $mdToast.show(
+                    if ( response.status == 409 ) {
 
-                        $mdToast.simple()
-                            .textContent( 'Podczas odtwarzania ścieżki wystąpił błąd! Spróbuj ponownie.' )
-                            .position( 'bottom right' )
-                            .hideDelay( 5000 )
+                        $mdToast.show(
 
-                        );
+                            $mdToast.simple()
+                                .textContent( 'Ścieżka nie może zostać odtworzona podczas zastrzeżonych godzin.' )
+                                .position( 'bottom right' )
+                                .hideDelay( 5000 )
+
+                            );
+
+                        }
+
+                    else {
+
+                        $mdToast.show(
+
+                            $mdToast.simple()
+                                .textContent( 'Podczas odtwarzania ścieżki wystąpił błąd! Spróbuj ponownie.' )
+                                .position( 'bottom right' )
+                                .hideDelay( 5000 )
+
+                            );
+
+                        }
 
                     }
 
@@ -831,7 +867,7 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
         };
 
-    $scope.StopNow = function ( track ) {
+    $scope.StopTrack = function ( track ) {
 
         $http.post( '/playlist/stop', {
 
@@ -867,7 +903,157 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
         };
 
-    // ...
+    $scope.EditTimeIntervals = function ( event, intervals, trigger ) {
+
+        if ( typeof( trigger ) != 'undefined' ) {
+
+            if ( trigger == false ) {
+
+                return; } }
+
+        $mdDialog.show( {
+
+            controller: EditTimeIntervalsController,
+            templateUrl: 'k361-edit-time-intervals.html',
+            locals: { intervals: intervals },
+            parent: angular.element( document.body ),
+            targetEvent: event,
+            clickOutsideToClose: false,
+            fullscreen: true
+
+            } ).then(
+
+                function ( response ) {
+
+                    intervals = response;
+
+                    },
+
+                function ( ) {
+
+                    // NOTHING
+
+                    }
+
+                );
+
+        };
+
+    $scope.CleanPlaylist = function ( ) {
+
+        $http.get( '/playlist/clean' ).then(
+
+            function ( response ) {
+
+                $mdToast.show(
+
+                    $mdToast.simple()
+                        .textContent( 'Playlista została wyczyszczona pomyślnie!' )
+                        .position( 'bottom right' )
+                        .hideDelay( 3000 )
+
+                    );
+
+                },
+
+            function ( response ) {
+
+                console.log( "ERROR #" + response.status + " IN CLEAN_PLAYLIST: " + response.data );
+
+                $mdToast.show(
+
+                    $mdToast.simple()
+                        .textContent( 'Podczas czyszczenia playlisty wystąpił błąd! Spróbuj ponownie.' )
+                        .position( 'bottom right' )
+                        .hideDelay( 5000 )
+
+                    );
+
+                }
+
+            );
+
+        };
+
+    $scope.ClearServerData = function ( event ) {
+
+        var Dialog = $mdDialog.confirm ( )
+            .title( 'Czyszczenie danych serwera' )
+            .textContent( 'Akcja ta spowoduje nieodwracalne usunięcie wszelkich danych z serwera, w tym zawartości biblioteki oraz playlisty. Czy na pewno chcesz kontynuować?' )
+            .ariaLabel( 'Czyszczenie danych serwera' )
+            .targetEvent( event )
+            .ok( 'Tak, kontynuuj' )
+            .cancel( 'Nie, przerwij akcję' );
+
+        $mdDialog.show( Dialog ).then(
+
+            function ( ) {
+
+                $http.get( '/state/reset' ).then(
+
+                    function ( response ) {
+
+                        $window.location.href = '/';
+
+                        },
+
+                    function ( response ) {
+
+                        console.log( "ERROR #" + response.status + " IN CLEAR_SERVER_DATA: " + response.data );
+
+                        $mdToast.show(
+
+                            $mdToast.simple()
+                                .textContent( 'Podczas czyszczenia danych serwera wystąpił błąd! Spróbuj ponownie.' )
+                                .position( 'bottom right' )
+                                .hideDelay( 5000 )
+
+                            );
+
+                        }
+
+                    );
+
+                },
+
+            function ( ) {
+
+                // NOTHING
+
+                }
+
+            );
+
+    };
+
+    $scope.ShutdownServer = function ( ) {
+
+        $http.get( '/state/shutdown' ).then(
+
+            function ( response ) {
+
+                $window.location.href = '/';
+
+                },
+
+            function ( response ) {
+
+                console.log( "ERROR #" + response.status + " IN SHUTDOWN_SERVER: " + response.data );
+
+                $mdToast.show(
+
+                    $mdToast.simple()
+                        .textContent( 'Podczas wyłączania serwera wystąpił błąd! Spróbuj ponownie.' )
+                        .position( 'bottom right' )
+                        .hideDelay( 5000 )
+
+                    );
+
+                }
+
+            );
+
+        };
 
     $scope.Logout = function ( ) {
 
@@ -1036,8 +1222,12 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                     if ( response.data.settings.timestamp > $scope.Synchronization.settings ) {
 
+                        $scope.SettingsBuffer.hold = true;
+
                         $scope.Settings = response.data.settings.data;
-                        $scope.Synchronization.settings = response.data.settings.timestamp; }
+                        $scope.Synchronization.settings = response.data.settings.timestamp;
+
+                        $scope.SettingsBuffer.playlist_designer_launch_time = $scope.TimeToText( $scope.Settings.playlist_designer_launch_time,true ); }
 
                     $scope.SynchronizeToolbar();
 
@@ -1151,7 +1341,7 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                     $scope.ContentReady = true;
 
-                    $interval( $scope.Synchronize, $scope.Settings.SynchronizationDelay ); }
+                    $interval( $scope.Synchronize, $scope.Settings.synchronization_delay ); }
 
                 $scope.Catalog.sort(
 
@@ -1243,7 +1433,7 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                     $scope.ContentReady = true;
 
-                    $interval( $scope.Synchronize, $scope.Settings.SynchronizationDelay ); }
+                    $interval( $scope.Synchronize, $scope.Settings.synchronization_delay ); }
 
                 $scope.InitPlaylistControls();
 
@@ -1295,8 +1485,12 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
             function ( response ) {
 
+                $scope.SettingsBuffer.hold = true;
+
                 $scope.Settings = response.data.settings;
                 $scope.Synchronization.settings = response.data.timestamp;
+
+                $scope.SettingsBuffer.playlist_designer_launch_time = $scope.TimeToText( $scope.Settings.playlist_designer_launch_time,true );
 
                 SettingsReady = true;
 
@@ -1304,7 +1498,7 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                     $scope.ContentReady = true;
 
-                    $interval( $scope.Synchronize, $scope.Settings.SynchronizationDelay ); }
+                    $interval( $scope.Synchronize, $scope.Settings.synchronization_delay ); }
 
                 },
 
@@ -1332,7 +1526,83 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
         }, true );
 
-    } ] );
+    $scope.$watch( function ( ) { return $scope.SettingsBuffer.playlist_designer_launch_time }, function( ) {
+
+        if ( typeof ( $scope.Settings.playlist_designer_launch_time ) == 'undefined' ) {
+
+            return; }
+
+        var Input = $scope.SettingsBuffer.playlist_designer_launch_time;
+
+        if ( typeof ( Input ) == 'undefined' ) {
+
+            return; }
+
+        if ( Input == '' ) {
+
+            return; }
+
+        var Delta = 0;
+
+        if ( Input.length == 7 ) {
+
+            Delta = 1; }
+
+        var Hours = parseInt( Input.substr( 0, 2 - Delta ) );
+        var Minutes = parseInt( Input.substr( 3 - Delta, 2 ) );
+        var Seconds = parseInt( Input.substr( 6 - Delta, 2 ) );
+
+        var Output = Hours * 3600 + Minutes * 60 + Seconds;
+
+        if ( Output == $scope.Settings.playlist_designer_launch_time ) {
+
+            return; }
+
+        $scope.Settings.playlist_designer_launch_time = Output;
+
+        } );
+
+    $scope.$watch( function ( ) { return $scope.Settings; }, function ( ) {
+
+        if ( angular.equals( $scope.Settings, {} ) ) {
+
+            return; }
+
+        if ( $scope.SettingsBuffer.hold ) {
+
+            $scope.SettingsBuffer.hold = false;
+
+            return; }
+
+        $http.post( '/state', {
+
+            settings: $scope.Settings
+
+            } ).then(
+
+                function ( response ) {
+
+                    // NOTHING
+
+                    },
+
+                function ( response ) {
+
+                    console.log( "ERROR #" + response.status + " IN SYNCHRONIZE: " + response.data );
+
+                    }
+
+                );
+
+        }, true );
+
+    } ] ).config( function( $mdThemingProvider ) { // TODO: COLORS
+
+        $mdThemingProvider.theme('default')
+            .primaryPalette('indigo')
+            .accentPalette('purple');
+
+        } );
 
 function CreateTrackController ( $scope, $mdDialog ) {
 
@@ -1439,6 +1709,70 @@ function EditTrackController ( $scope, $http, $mdDialog, track ) {
                 }
 
             );
+
+        };
+
+    $scope.hide = function ( ) {
+
+        $mdDialog.hide();
+
+        };
+
+    $scope.cancel = function ( ) {
+
+        $mdDialog.cancel();
+
+        };
+
+    $scope.respond = function( response ) {
+
+        $mdDialog.hide( response );
+
+        };
+
+    }
+
+function EditTimeIntervalsController ( $scope, $mdDialog, intervals ) {
+
+    $scope.Intervals = {
+
+        title: '',
+        album: '',
+        author: '',
+
+        length: 36000,
+        begin: 0,
+        end: 0,
+
+        volume: 0,
+        rate: 0
+
+        };
+
+    $scope.TimeToText = function ( time ) {
+
+        var Text = '';
+
+        if ( time > 3600 ) {
+
+            var Hours = String( Math.floor( time / 3600 ) );
+            var Minutes = ( '0' + String( Math.floor( ( time % 3600 ) / 60 ) ) ).substr( -2, 2 );
+            var Seconds = ( '0' + String( Math.floor( time % 60 ) ) ).substr( -2, 2 );
+
+            if ( Hours.length == 1 ) {
+
+                Hours = '0' + Hours; }
+
+            Text = Hours + ':' + Minutes + ':' + Seconds; }
+
+        else {
+
+            var Minutes = ( '0' + String( Math.floor( ( time % 3600 ) / 60 ) ) ).substr( -2, 2 );
+            var Seconds = ( '0' + String( Math.floor( time % 60 ) ) ).substr( -2, 2 );
+
+            Text = Minutes + ':' + Seconds; }
+
+        return Text;
 
         };
 

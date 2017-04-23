@@ -6,11 +6,11 @@ db.smem = []; // [ id : STRING, obj: OBJECT ]
 
 db.init = function ( ) {
 
+    console.log('Initiating database');
+
     try {
 
-        db.smem = JSON.parse( fs.readFileSync( './db.json', 'utf8' ) );
-
-        console.log('Initiating the database'); }
+        db.smem = JSON.parse( fs.readFileSync( './db.json', 'utf8' ) ); }
 
     catch ( err ) {
 
@@ -23,14 +23,22 @@ db.init = function ( ) {
 
 db.reset = function ( ) {
 
-    console.log('Resetting the database');
+    console.log('Resetting database');
 
     db.dmem = [];
     db.smem = [
 
         { id: "ATH-PASSWORD", obj: { password: "", timestamp: Date.now() } },
-        { id: "LIB-CATALOG", obj: { catalog: [], tracks: [], timestamp: Date.now() } }
-        // TODO: SETTINGS
+        { id: "LIB-CATALOG", obj: { catalog: [], tracks: [], timestamp: Date.now() } },
+        { id: "STE-SETTINGS", obj: { settings: {
+
+            playlist_designer: false,
+            playlist_designer_launch_time: 10800,
+            playlist_designer_time_intervals: [],
+            reserved_time_intervals: [],
+            synchronization_delay: 2000
+
+            }, timestamp: Date.now() } }
 
         ];
 
@@ -142,7 +150,7 @@ db.swrite = function ( id, obj, callback ) {
 
         if ( err ) {
 
-            throw err; }
+            console.log( 'While writing to database an error occurred: ' + err ); }
 
         if ( callback !== undefined ) {
 
@@ -160,7 +168,7 @@ db.sremove = function ( id, callback ) {
 
         if ( err ) {
 
-            throw err; }
+            console.log( 'While writing to database an error occurred: ' + err ); }
 
         if ( callback !== undefined ) {
 
