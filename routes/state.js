@@ -184,14 +184,69 @@ router.post( '/synchronize', function( req, res ) { // { catalog: DATE, schedule
 
     } );
 
+router.get( '/password', function( req, res ) {
+
+    var Password = db.sread('ATH-PASSWORD');
+
+    if ( !Password.valid ) {
+
+        res.status(500).send('Password is inaccessible!'); return; }
+
+    if ( Password.obj.password == '' ) {
+
+        res.json( { available: false } ); }
+
+    else {
+
+        res.json( { available: true } ); }
+
+    } );
+
+router.post( '/password', function( req, res ) { // { old_password: STRING, new_password: STRING }
+
+    var Password = db.sread('ATH-PASSWORD');
+
+    if ( !Password.valid ) {
+
+        res.status(500).send('Password is inaccessible!'); return; }
+
+    if ( typeof ( req.body.new_password ) != 'string' ) {
+
+        res.status(401).send('Password type other than string is not allowed.'); return; }
+
+    if ( req.body.new_password.length == 0 ) {
+
+        res.status(401).send('Password length must be greater than zero.'); return; }
+
+    if ( Password.obj.password !== req.body.old_password ) {
+
+        res.status(401).send('Passwords do not match.'); return; }
+
+    Password.obj.password = req.body.new_password;
+
+    db.swrite( 'ATH-PASSWORD', { password: Password.obj.password, timestamp: Date.now() } );
+
+    res.sendStatus(200);
+
+    } );
+
 router.get( '/shutdown', function( req, res ) {
 
     if ( !auth.validate(req) ) {
 
         res.status(401).send('Unauthorized'); return; }
 
+    var Audio = db.dread('PLT-AUDIO');
+
+    if ( Audio.valid ) {
+
+        if ( Audio.obj.playing ) {
+
+            Audio.obj.stream.kill(); } }
+
     res.sendStatus(200);
 
+    console.log('Terminating process by user\'s request');
     process.exit(2);
 
     } );

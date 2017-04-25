@@ -869,31 +869,27 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
     $scope.StopTrack = function ( track ) {
 
-        $http.post( '/playlist/stop', {
+        $http.get( '/playlist/stop' ).then(
 
-            // NOTHING
+            function ( response ) {
 
-            } ).then(
+                $scope.Audio.playing = false;
+                $scope.Audio.track = '';
 
-                function ( response ) {
+                $scope.Synchronize();
 
-                    $scope.Audio.playing = false;
-                    $scope.Audio.track = '';
+                },
 
-                    $scope.Synchronize();
+            function ( response ) {
 
-                    },
+                console.log( "ERROR #" + response.status + " IN STOP_NOW: " + response.data );
 
-                function ( response ) {
+                $mdToast.show(
 
-                    console.log( "ERROR #" + response.status + " IN STOP_NOW: " + response.data );
-
-                    $mdToast.show(
-
-                        $mdToast.simple()
-                            .textContent( 'Podczas zatzymywania odtwarzania ścieżki wystąpił błąd! Spróbuj ponownie.' )
-                            .position( 'bottom right' )
-                            .hideDelay( 5000 )
+                    $mdToast.simple()
+                        .textContent( 'Podczas zatzymywania odtwarzania ścieżki wystąpił błąd! Spróbuj ponownie.' )
+                        .position( 'bottom right' )
+                        .hideDelay( 5000 )
 
                     );
 
@@ -1413,7 +1409,7 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                 console.log( "ERROR #" + response.status + " IN SETUP: " + response.data );
 
-                // ERROR
+                // TODO: ERROR MESSAGE
 
                 }
 
@@ -1475,7 +1471,7 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                 console.log( "ERROR #" + response.status + " IN SETUP: " + response.data );
 
-                // ERROR
+                // TODO: ERROR MESSAGE
 
                 }
 
@@ -1506,7 +1502,7 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                 console.log( "ERROR #" + response.status + " IN SETUP: " + response.data );
 
-                // ERROR
+                // TODO: ERROR MESSAGE
 
                 }
 
@@ -1596,11 +1592,11 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
         }, true );
 
-    } ] ).config( function( $mdThemingProvider ) { // TODO: COLORS
+    } ] ).config( function( $mdThemingProvider ) {
 
         $mdThemingProvider.theme('default')
             .primaryPalette('indigo')
-            .accentPalette('purple');
+            .accentPalette('red');
 
         } );
 

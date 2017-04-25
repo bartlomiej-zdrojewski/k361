@@ -1,10 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html>
+
 <head>
+
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="static/angular_material/1.1.0/angular-material.min.css" />
+    <link rel="stylesheet" href="styles/index.css" />
+
+    <title>k361</title>
+
 </head>
-<body>
+
+<body ng-app="k361">
+
+    <div ng-controller="Controller" ng-init="Setup()" layout="row" layout-align="center center" layout-fill ng-cloak>
+
+        <md-content style="max-width:400px;height:220px;" class="md-padding" ng-show="Mode==1" layout="column" layout-align="center center" md-whiteframe="1" flex>
+
+            <md-input-container flex="50">
+                <input style="text-align:center;" type="password" aria-label="Hasło" ng-model="Password" required> <!-- EN: Password -->
+            </md-input-container>
+
+            <md-input-container flex="50">
+                <span flex></span>
+                <md-button class="md-raised md-primary" ng-click="Login();">&nbsp;&nbsp;&nbsp;Zaloguj się&nbsp;&nbsp;&nbsp;</md-button> <!-- EN: Login -->
+                <span flex></span>
+            </md-input-container>
+
+        </md-content>
+
+        <md-content style="max-width:400px;height:220px;" class="md-padding" ng-show="Mode==2" layout="column" layout-align="center center" md-whiteframe="1" flex>
+
+            <md-input-container flex="50">
+                <input style="text-align:center;" type="password" aria-label="Hasło" ng-model="NewPassword" required> <!-- EN: Password -->
+            </md-input-container>
+
+            <md-input-container flex="50">
+                <span flex></span>
+                <md-button class="md-raised md-primary" ng-click="ChangePassword();">&nbsp;&nbsp;&nbsp;Stwórz hasło&nbsp;&nbsp;&nbsp;</md-button> <!-- EN: Create Password -->
+                <span flex></span>
+            </md-input-container>
+
+        </md-content>
+
+        <md-content style="max-width:400px;height:220px;" class="md-padding" ng-show="Mode==3" layout="column" layout-align="center center" md-whiteframe="1" flex>
+
+            <!-- TODO: CHANGE PASSWORD -->
+
+        </md-content>
+
+    </div>
+
+    <script src="static/angularjs/1.5.5/angular.min.js"></script>
+    <script src="static/angularjs/1.5.5/angular-messages.min.js"></script>
+    <script src="static/angularjs/1.5.5/angular-animate.min.js"></script>
+    <script src="static/angularjs/1.5.5/angular-aria.min.js"></script>
+    <script src="static/angular_material/1.1.0/angular-material.min.js"></script>
+
+    <script src="scripts/index.js"></script>
 
 </body>
+
 </html>

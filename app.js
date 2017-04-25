@@ -1,3 +1,6 @@
+console.log( Date() );
+console.log('Launching process');
+
 var express = require('express');
 var path = require('path');
 var http = require('http');
@@ -262,6 +265,8 @@ app.locals.PlaylistDesigner = function ( app, db, player ) {
         // FIND LAST 10 TRACKS FROM SCHEDULE OR NULL
 
         // GET ALL EMPTY TIME INTERVALS
+        // CUT TIME INTERVALS IF THEE ANY TRACKS IN THEM
+        // MERGE TIME INTERVALS
 
         // WHILE ANY EMPTY TIME INTERVALS
         // GET TRACK WITH MINIMUM POINTS
@@ -269,6 +274,7 @@ app.locals.PlaylistDesigner = function ( app, db, player ) {
         // IF MORE THAN 10 TRACKS AND OBTAINED TRACK IN LAST 10 -> CONTINUE
         // PUT TRACK INTO FIRST EMPTY TIME INTERVALS ( IN SCHEDULE ), CUT IF NECESSARY
         // ADD 1 / ( RATE + 1 ) POINTS TO TRACK
+        // EDIT LAST 10 TRACKS
 
         db.swrite( 'PLT-SCHEDULE', Schedule.obj );
 
@@ -334,14 +340,14 @@ function onError ( error ) {
 
         case 'EACCES':
 
-            console.error( bind + ' requires elevated privileges!' );
+            console.log( bind + ' requires elevated privileges!' );
             process.exit(1);
 
             break;
 
         case 'EADDRINUSE':
 
-            console.error( bind + ' is already in use!' );
+            console.log( bind + ' is already in use!' );
             process.exit(1);
 
             break;

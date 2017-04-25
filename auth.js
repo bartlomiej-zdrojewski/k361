@@ -4,9 +4,6 @@ var auth = {};
 
 auth.validate = function ( req ) {
 
-    // DEBUG
-    return true;
-
     if ( req.cookies.token === undefined ) {
 
         return false; }

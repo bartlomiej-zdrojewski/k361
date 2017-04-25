@@ -20,7 +20,7 @@ router.post( '/', function( req, res ) { // { password : STRING }
 
     else {
 
-        res.status(400).send('Wrong password'); return; }
+        res.status(400).send('Passwords do not match.'); return; }
 
     res.sendStatus(200);
 

@@ -28,9 +28,9 @@ db.reset = function ( ) {
     db.dmem = [];
     db.smem = [
 
-        { id: "ATH-PASSWORD", obj: { password: "", timestamp: Date.now() } },
-        { id: "LIB-CATALOG", obj: { catalog: [], tracks: [], timestamp: Date.now() } },
-        { id: "STE-SETTINGS", obj: { settings: {
+        { id: 'ATH-PASSWORD', obj: { password: '', timestamp: Date.now() } },
+        { id: 'LIB-CATALOG', obj: { catalog: [], tracks: [], timestamp: Date.now() } },
+        { id: 'STE-SETTINGS', obj: { settings: {
 
             playlist_designer: false,
             playlist_designer_launch_time: 10800,

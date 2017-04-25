@@ -1,1 +1,1 @@
-node ./app.js > log &
+node ./app.js >> log &
