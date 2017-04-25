@@ -4,7 +4,7 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
     $scope.$mdMedia = $mdMedia;
 
-    $scope.ActiveTab = 3;
+    $scope.ActiveTab = 2;
     $scope.ContentReady = false;
     $scope.MobileMode = !$mdMedia('gt-sm');
 
@@ -925,7 +925,7 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                 function ( response ) {
 
-                    intervals = response;
+                    // NOTHING
 
                     },
 
@@ -1648,11 +1648,11 @@ function EditTrackController ( $scope, $http, $mdDialog, track ) {
 
         };
 
-    $scope.TimeToText = function ( time ) {
+    $scope.TimeToText = function ( time, force_hours ) {
 
         var Text = '';
 
-        if ( time > 3600 ) {
+        if ( time > 3600 || force_hours === true ) {
 
             var Hours = String( Math.floor( time / 3600 ) );
             var Minutes = ( '0' + String( Math.floor( ( time % 3600 ) / 60 ) ) ).substr( -2, 2 );
@@ -1732,28 +1732,22 @@ function EditTrackController ( $scope, $http, $mdDialog, track ) {
 
     }
 
-function EditTimeIntervalsController ( $scope, $mdDialog, intervals ) {
+function EditTimeIntervalsController ( $scope, $mdDialog, $mdMedia, intervals ) {
 
-    $scope.Intervals = {
+    $scope.$mdMedia = $mdMedia;
 
-        title: '',
-        album: '',
-        author: '',
+    $scope.Selected = intervals.length;
+    $scope.Days = [ false, false, false, false, false, false, false ];
+    $scope.Begin = '00:00:00';
+    $scope.End = '00:00:00';
 
-        length: 36000,
-        begin: 0,
-        end: 0,
+    $scope.Intervals = intervals;
 
-        volume: 0,
-        rate: 0
-
-        };
-
-    $scope.TimeToText = function ( time ) {
+    $scope.TimeToText = function ( time, force_hours ) {
 
         var Text = '';
 
-        if ( time > 3600 ) {
+        if ( time > 3600 || force_hours === true ) {
 
             var Hours = String( Math.floor( time / 3600 ) );
             var Minutes = ( '0' + String( Math.floor( ( time % 3600 ) / 60 ) ) ).substr( -2, 2 );
@@ -1776,6 +1770,202 @@ function EditTimeIntervalsController ( $scope, $mdDialog, intervals ) {
 
         };
 
+    $scope.Validate = function ( ) {
+
+        var Days = false;
+
+        for ( var i = 0; i < 7; i++ ) {
+
+            if ( $scope.Days[i] == true ) {
+
+                Days = true;
+
+                break; } }
+
+        if ( !Days ) {
+
+            return false; }
+
+        if ( $scope.Begin.length == 0 || $scope.End.length == 0 ) {
+
+            return false; }
+
+        if ( $scope.Begin.length == $scope.End.length && $scope.Begin >= $scope.End ) {
+
+            return false; }
+
+        if ( $scope.Begin.length > $scope.End.length && $scope.Begin >= ( '0' + $scope.End ) ) {
+
+            return false; }
+
+        if ( $scope.Begin.length < $scope.End.length && ( '0' + $scope.Begin ) >= $scope.End ) {
+
+            return false; }
+
+        return true;
+
+        };
+
+    $scope.SelectTimeInterval = function ( ) {
+
+        if ( $scope.Selected != $scope.Intervals.length ) {
+
+            $scope.Days = [];
+
+            for ( var i = 0; i < $scope.Intervals[ $scope.Selected ].days.length; i++ ) {
+
+                $scope.Days.push( $scope.Intervals[ $scope.Selected ].days[i] ); }
+
+            $scope.Begin = $scope.TimeToText( $scope.Intervals[ $scope.Selected ].begin, true );
+            $scope.End = $scope.TimeToText( $scope.Intervals[ $scope.Selected ].end, true ); }
+
+        else {
+
+            $scope.Days = [ false, false, false, false, false, false, false ];
+
+            $scope.Begin = '00:00:00';
+            $scope.End = '00:00:00'; }
+
+        };
+
+    $scope.CreateTimeInterval = function ( ) {
+
+        var Interval = {
+
+            days: [],
+            begin: 0,
+            end: 0,
+
+            text: ''
+
+            };
+
+        var Delta = 0;
+
+        if ( $scope.Begin.length == 7 ) {
+
+            Delta = 1; }
+
+        var BeginHours = parseInt( $scope.Begin.substr( 0, 2 - Delta ) );
+        var BeginMinutes = parseInt( $scope.Begin.substr( 3 - Delta, 2 ) );
+        var BeginSeconds = parseInt( $scope.Begin.substr( 6 - Delta, 2 ) );
+
+        Interval.begin = BeginHours * 3600 + BeginMinutes * 60 + BeginSeconds;
+        Interval.text = Delta > 0 ? '0' + $scope.Begin : $scope.Begin;
+
+        Delta = 0;
+
+        if ( $scope.End.length == 7 ) {
+
+            Delta = 1; }
+
+        var EndHours = parseInt( $scope.End.substr( 0, 2 - Delta ) );
+        var EndMinutes = parseInt( $scope.End.substr( 3 - Delta, 2 ) );
+        var EndSeconds = parseInt( $scope.End.substr( 6 - Delta, 2 ) );
+
+        Interval.end = EndHours * 3600 + EndMinutes * 60 + EndSeconds;
+        Interval.text = Interval.text + ' - ' + ( Delta > 0 ? '0' + $scope.End : $scope.End );
+
+        Interval.days = $scope.Days;
+
+        if ( Interval.days[0] ) {
+
+            Interval.text = 'Nd, ' + Interval.text; }
+
+        if ( Interval.days[6] ) {
+
+            Interval.text = 'Sob, ' + Interval.text; }
+
+        if ( Interval.days[5] ) {
+
+            Interval.text = 'Pt, ' + Interval.text; }
+
+        if ( Interval.days[4] ) {
+
+            Interval.text = 'Czw, ' + Interval.text; }
+
+        if ( Interval.days[3] ) {
+
+            Interval.text = 'Śr, ' + Interval.text; }
+
+        if ( Interval.days[2] ) {
+
+            Interval.text = 'Wt, ' + Interval.text; }
+
+        if ( Interval.days[1] ) {
+
+            Interval.text = 'Pon, ' + Interval.text; }
+
+        $scope.Intervals.push(Interval);
+
+        };
+
+    $scope.UpdateTimeInterval = function ( ) {
+
+        var Delta = 0;
+
+        if ( $scope.Begin.length == 7 ) {
+
+            Delta = 1; }
+
+        var BeginHours = parseInt( $scope.Begin.substr( 0, 2 - Delta ) );
+        var BeginMinutes = parseInt( $scope.Begin.substr( 3 - Delta, 2 ) );
+        var BeginSeconds = parseInt( $scope.Begin.substr( 6 - Delta, 2 ) );
+
+        $scope.Intervals[ $scope.Selected ].begin = BeginHours * 3600 + BeginMinutes * 60 + BeginSeconds;
+        $scope.Intervals[ $scope.Selected ].text = Delta > 0 ? '0' + $scope.Begin : $scope.Begin;
+
+        Delta = 0;
+
+        if ( $scope.End.length == 7 ) {
+
+            Delta = 1; }
+
+        var EndHours = parseInt( $scope.End.substr( 0, 2 - Delta ) );
+        var EndMinutes = parseInt( $scope.End.substr( 3 - Delta, 2 ) );
+        var EndSeconds = parseInt( $scope.End.substr( 6 - Delta, 2 ) );
+
+        $scope.Intervals[ $scope.Selected ].end = EndHours * 3600 + EndMinutes * 60 + EndSeconds;
+        $scope.Intervals[ $scope.Selected ].text = $scope.Intervals[ $scope.Selected ].text + ' - ' + ( Delta > 0 ? '0' + $scope.End : $scope.End );
+
+        $scope.Intervals[ $scope.Selected ].days = $scope.Days;
+
+        if ( $scope.Intervals[ $scope.Selected ].days[0] ) {
+
+            $scope.Intervals[ $scope.Selected ].text = 'Nd, ' + $scope.Intervals[ $scope.Selected ].text; }
+
+        if ( $scope.Intervals[ $scope.Selected ].days[6] ) {
+
+            $scope.Intervals[ $scope.Selected ].text = 'Sob, ' + $scope.Intervals[ $scope.Selected ].text; }
+
+        if ( $scope.Intervals[ $scope.Selected ].days[5] ) {
+
+            $scope.Intervals[ $scope.Selected ].text = 'Pt, ' + $scope.Intervals[ $scope.Selected ].text; }
+
+        if ( $scope.Intervals[ $scope.Selected ].days[4] ) {
+
+            $scope.Intervals[ $scope.Selected ].text = 'Czw, ' + $scope.Intervals[ $scope.Selected ].text; }
+
+        if ( $scope.Intervals[ $scope.Selected ].days[3] ) {
+
+            $scope.Intervals[ $scope.Selected ].text = 'Śr, ' + $scope.Intervals[ $scope.Selected ].text; }
+
+        if ( $scope.Intervals[ $scope.Selected ].days[2] ) {
+
+            $scope.Intervals[ $scope.Selected ].text = 'Wt, ' + $scope.Intervals[ $scope.Selected ].text; }
+
+        if ( $scope.Intervals[ $scope.Selected ].days[1] ) {
+
+            $scope.Intervals[ $scope.Selected ].text = 'Pon, ' + $scope.Intervals[ $scope.Selected ].text; }
+
+        };
+
+    $scope.DeleteTimeInterval = function ( ) {
+
+        $scope.Intervals.splice( $scope.Selected, 1 );
+
+        };
+
     $scope.hide = function ( ) {
 
         $mdDialog.hide();
@@ -1785,12 +1975,6 @@ function EditTimeIntervalsController ( $scope, $mdDialog, intervals ) {
     $scope.cancel = function ( ) {
 
         $mdDialog.cancel();
-
-        };
-
-    $scope.respond = function( response ) {
-
-        $mdDialog.hide( response );
 
         };
 

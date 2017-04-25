@@ -55,20 +55,31 @@ db.swap = function ( mem, i, j ) {
 
     };
 
-db.read = function ( mem, id ) { // TODO: CHANGE TO BINARY SEARCH
+db.read = function ( mem, id, json_friendly ) { // TODO: CHANGE LINEAR SEARCH TO BINARY SEARCH
 
     if ( id === undefined || id === '' ) {
 
         return { id: id, obj: {}, valid: false }; }
 
-    var obj = { id: id, obj: {}, valid: false };
+    var data = { id: id, obj: {}, valid: false };
 
     for ( var i = 0; i < mem.length; i++ ) {
 
         if ( mem[i].id === id ) {
 
-            obj.obj = mem[i].obj;
-            obj.valid = true;
+            if ( typeof( json_friendly ) != 'boolean' ) {
+
+                data.obj = JSON.parse( JSON.stringify( mem[i].obj ) ); }
+
+            else if ( json_friendly ) {
+
+                data.obj = JSON.parse( JSON.stringify( mem[i].obj ) ); }
+
+            else {
+
+                data.obj = mem[i].obj; }
+
+            data.valid = true;
 
             if ( i > 0 ) {
 
@@ -76,11 +87,11 @@ db.read = function ( mem, id ) { // TODO: CHANGE TO BINARY SEARCH
 
             break; } }
 
-    return obj;
+    return data;
 
     };
 
-db.write = function ( mem, id, obj ) { // TODO: CHANGE TO BINARY SEARCH
+db.write = function ( mem, id, obj, json_friendly ) { // TODO: CHANGE LINEAR SEARCH TO BINARY SEARCH AND USE BINARY INSERTION AFTERWARDS
 
     if ( id === undefined || id === '' ) {
 
@@ -90,7 +101,17 @@ db.write = function ( mem, id, obj ) { // TODO: CHANGE TO BINARY SEARCH
 
         if ( mem[i].id === id ) {
 
-            mem[i].obj = obj;
+            if ( typeof( json_friendly ) != 'boolean' ) {
+
+                mem[i].obj = JSON.parse( JSON.stringify( obj ) ); }
+
+            else if ( json_friendly ) {
+
+                mem[i].obj = JSON.parse( JSON.stringify( obj ) ); }
+
+            else {
+
+                mem[i].obj = obj; }
 
             if ( i > 0 ) {
 
@@ -102,7 +123,7 @@ db.write = function ( mem, id, obj ) { // TODO: CHANGE TO BINARY SEARCH
 
     };
 
-db.remove = function ( mem, id ) { // TODO: CHANGE TO BINARY SEARCH
+db.remove = function ( mem, id ) { // TODO: CHANGE LINEAR SEARCH TO BINARY SEARCH
 
     if ( id === undefined || id === '' ) {
 
@@ -120,13 +141,13 @@ db.remove = function ( mem, id ) { // TODO: CHANGE TO BINARY SEARCH
 
 db.dread = function ( id ) {
 
-    return db.read( db.dmem, id );
+    return db.read( db.dmem, id, false );
 
     };
 
 db.dwrite = function ( id, obj ) {
 
-    db.write( db.dmem, id, obj );
+    db.write( db.dmem, id, obj, false );
 
     };
 

@@ -30,7 +30,7 @@ router.post( '/', function( req, res ) { // { settings: OBJECT }
 
         res.status(401).send('Unauthorized'); return; }
 
-    var Settings = db.sread( 'STE-SETTINGS' );
+    var Settings = db.sread('STE-SETTINGS');
 
     if ( !Settings.valid ) {
 
@@ -108,7 +108,7 @@ router.post( '/synchronize', function( req, res ) { // { catalog: DATE, schedule
 
         res.status(500).send('Library catalog is inaccessible!'); return; }
 
-    var Schedule = db.sread( 'PLT-SCHEDULE' );
+    var Schedule = db.sread('PLT-SCHEDULE');
 
     if ( !Schedule.valid ) {
 
@@ -218,7 +218,7 @@ router.get( '/reset', function( req, res ) {
 
         for ( var i = 0; i < Catalog.obj.tracks.length; i++ ) {
 
-            var Track = db.sread('LIB-TRACK-' + Catalog.obj.tracks[i]);
+            var Track = db.sread( 'LIB-TRACK-' + Catalog.obj.tracks[i] );
 
             if ( Track.valid ) {
 

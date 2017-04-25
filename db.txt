@@ -90,19 +90,21 @@ STE-SETTINGS: {
 
         playlist_designer_time_intervals: [
 
-            days: [ NUMBER ], // FROM 0 TO 6
-
+            days: [ BOOLEAN ], // 7 ELEMENTS
             begin: NUMBER, // FROM 0 TO 86399
-            end: NUMBER // FROM 0 TO 86399
+            end: NUMBER, // FROM 0 TO 86399
+
+            text: STRING
 
             ],
 
         reserved_time_intervals: [
 
-            days: [ NUMBER ], // FROM 0 TO 6
-
+            days: [ BOOLEAN ], // 7 ELEMENTS
             begin: NUMBER, // FROM 0 TO 86399
-            end: NUMBER // FROM 0 TO 86399
+            end: NUMBER, // FROM 0 TO 86399
+
+            text: STRING
 
             ]
 

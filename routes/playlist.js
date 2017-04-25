@@ -19,7 +19,7 @@ router.get( '/', function( req, res ) {
 
         res.status(500).send('Audio stream is inaccessible!'); return; }
 
-    var Schedule = db.sread( 'PLT-SCHEDULE' );
+    var Schedule = db.sread('PLT-SCHEDULE');
 
     if ( !Schedule.valid ) {
 
@@ -111,7 +111,7 @@ router.post( '/play', function( req, res ) {
 
     } );
 
-router.post( '/stop', function( req, res ) {
+router.get( '/stop', function( req, res ) {
 
     if ( !auth.validate(req) ) {
 
@@ -150,7 +150,7 @@ router.post( '/add', function( req, res ) { // { track: STRING, begin: DATE, dir
 
         res.status(500).send('Audio stream is inaccessible!'); return; }
 
-    var Schedule = db.sread( 'PLT-SCHEDULE' );
+    var Schedule = db.sread('PLT-SCHEDULE');
 
     if ( !Schedule.valid ) {
 
@@ -221,7 +221,7 @@ router.post( '/add', function( req, res ) { // { track: STRING, begin: DATE, dir
                 res.status(409).send('The track is in conflict with other track.'); return; } } }
 
     Schedule.obj.timestamp = Date.now();
-    Schedule.obj.schedule.push(Entry); // TODO: CHANGE TO BINARY INSERTION AND REMOVE SORT FUNCTION
+    Schedule.obj.schedule.push(Entry); // TODO: CHANGE PUSH TO BINARY INSERTION AND REMOVE UNNECESSARY SORT FUNCTION
 
     Schedule.obj.schedule.sort( function ( a, b ) {
 
@@ -257,7 +257,7 @@ router.post( '/swap', function( req, res ) { // { first: STRING, second: STRING 
 
         res.status(500).send('Audio stream is inaccessible!'); return; }
 
-    var Schedule = db.sread( 'PLT-SCHEDULE' );
+    var Schedule = db.sread('PLT-SCHEDULE');
 
     if ( !Schedule.valid ) {
 
@@ -345,7 +345,7 @@ router.post( '/remove', function( req, res ) { // { id: STRING }
 
         res.status(500).send('Audio stream is inaccessible!'); return; }
 
-    var Schedule = db.sread( 'PLT-SCHEDULE' );
+    var Schedule = db.sread('PLT-SCHEDULE');
 
     if ( !Schedule.valid ) {
 
@@ -392,7 +392,7 @@ router.get( '/clean', function( req, res ) {
 
             Audio.obj.stream.kill(); } }
 
-    var Schedule = db.sread( 'PLT-SCHEDULE' );
+    var Schedule = db.sread('PLT-SCHEDULE');
 
     if ( !Schedule.valid ) {
 

@@ -16,9 +16,9 @@ var app = express();
 var config = require('./config.js');
 var db = require('./db.js'); db.init();
 
-app.locals.GetAudioAccessPermission = function ( db ) { // TODO: TEST
+app.locals.GetAudioAccessPermission = function ( db ) {
 
-    var Settings = db.sread( 'STE-SETTINGS' );
+    var Settings = db.sread('STE-SETTINGS');
 
     if ( !Settings.valid ) {
 
@@ -30,17 +30,7 @@ app.locals.GetAudioAccessPermission = function ( db ) { // TODO: TEST
 
     for ( var i = 0; i < Settings.obj.settings.reserved_time_intervals.length; i++ ) {
 
-        var DayMatch = false;
-
-        for ( var j = 0; j < Settings.obj.settings.reserved_time_intervals.days.length; j++ ) {
-
-            if ( Settings.obj.settings.reserved_time_intervals[i].days[j] == Today ) {
-
-                DayMatch = true;
-
-                break; } }
-
-        if ( !DayMatch ) {
+        if ( Settings.obj.settings.reserved_time_intervals[i].days[Today] == false ) {
 
             continue; }
 
@@ -52,7 +42,7 @@ app.locals.GetAudioAccessPermission = function ( db ) { // TODO: TEST
 
     };
 
-app.locals.AudioAccessWatchman = function ( app, db ) { // TODO: TEST
+app.locals.AudioAccessWatchman = function ( app, db ) {
 
     clearTimeout( app.locals.AudioAccessWatchmanTimeout );
     app.locals.AudioAccessWatchmanTimeout = setTimeout( function ( ) { app.locals.AudioAccessWatchman( app, db ); }, 1000 );
@@ -75,7 +65,7 @@ app.locals.AudioAccessWatchman = function ( app, db ) { // TODO: TEST
             db.dwrite( 'PLT-AUDIO', Audio.obj );
 
             clearTimeout( app.locals.PlaylistManagerTimeout );
-            app.locals.PlaylistManagerTimeout = setTimeout( function ( ) { app.locals.PlaylistManager( app, db, player ); }, app.locals.GetAudioAccessPermission( db ) ); } }
+            app.locals.PlaylistManagerTimeout = setTimeout( function ( ) { app.locals.PlaylistManager( app, db, player ); }, app.locals.GetAudioAccessPermission( db ) * 1000 ); } }
 
     };
 
@@ -91,7 +81,7 @@ app.locals.PlaylistManager = function ( app, db, player ) {
 
         Audio.obj = { stream: {}, playing: false, track: '' }; }
 
-    var Schedule = db.sread( 'PLT-SCHEDULE' );
+    var Schedule = db.sread('PLT-SCHEDULE');
 
     if ( !Schedule.valid ) {
 
@@ -217,11 +207,14 @@ app.locals.PlaylistManager = function ( app, db, player ) {
 
     };
 
-app.locals.PlaylistDesigner = function ( app, db ) {
+app.locals.PlaylistDesigner = function ( app, db, player ) {
 
     clearTimeout( app.locals.PlaylistDesignerTimeout );
 
-    var Settings = db.sread( 'STE-SETTINGS' );
+    var Settings = db.sread('STE-SETTINGS');
+    var Catalog = db.sread('LIB-CATALOG');
+    var Schedule = db.sread('PLT-SCHEDULE');
+    var Audio = db.dread( 'PLT-AUDIO' );
 
     if ( !Settings.valid ) {
 
@@ -229,10 +222,20 @@ app.locals.PlaylistDesigner = function ( app, db ) {
 
         return; }
 
-    // TODO: PLAYLIST DESIGNER
+    if ( !Catalog.valid ) {
+
+        return; }
+
+    if ( !Schedule.valid ) {
+
+        return; }
+
+    if ( !Audio.valid ) {
+
+        return; }
 
     var Now = new Date();
-    var TimeoutDelay = 1000 * ( Now.getHours() * 3600 + Now.getMinutes() * 60 + Now.getSeconds() - Settings.obj.settings.playlist_designer_launch_time );
+    var TimeoutDelay = 1000 * ( Settings.obj.settings.playlist_designer_launch_time - Now.getHours() * 3600 + Now.getMinutes() * 60 + Now.getSeconds() );
 
     if ( TimeoutDelay < 0 ) {
 
@@ -240,11 +243,44 @@ app.locals.PlaylistDesigner = function ( app, db ) {
 
     app.locals.PlaylistDesignerTimeout = setTimeout( function ( ) { app.locals.PlaylistDesigner( app, db ); }, TimeoutDelay );
 
+    var Tracks = [];
+
+    for ( var i = 0; i < Catalog.obj.tracks.length; i++ ) {
+
+        var Track = db.sread( 'LIB-TRACK-' + Catalog.obj.tracks[i] );
+
+        if ( Track.valid ) {
+
+            Tracks.push( Track.obj ); } }
+
+    if ( Tracks.length > 0 ) {
+
+        for ( var i = 0; i < Tracks.length; i++ ) {
+
+            Tracks[i].points = Tracks[i].views / ( Tracks[i].rate + 1 ); }
+
+        // FIND LAST 10 TRACKS FROM SCHEDULE OR NULL
+
+        // GET ALL EMPTY TIME INTERVALS
+
+        // WHILE ANY EMPTY TIME INTERVALS
+        // GET TRACK WITH MINIMUM POINTS
+        // IF MORE THAN 2 TRACKS AND OBTAINED TRACK IN LAST 2 -> CONTINUE
+        // IF MORE THAN 10 TRACKS AND OBTAINED TRACK IN LAST 10 -> CONTINUE
+        // PUT TRACK INTO FIRST EMPTY TIME INTERVALS ( IN SCHEDULE ), CUT IF NECESSARY
+        // ADD 1 / ( RATE + 1 ) POINTS TO TRACK
+
+        db.swrite( 'PLT-SCHEDULE', Schedule.obj );
+
+        if ( !Audio.obj.playing ) {
+
+            app.locals.PlaylistManager( app, db, player ); } }
+
     };
 
 app.locals.AudioAccessWatchmanTimeout = setTimeout( function ( ) { app.locals.AudioAccessWatchman( app, db ); }, 0 );
 app.locals.PlaylistManagerTimeout = setTimeout( function ( ) { app.locals.PlaylistManager( app, db, player ); }, 0 );
-app.locals.PlaylistDesignerTimeout = setTimeout( function ( ) { app.locals.PlaylistDesigner( app, db ); }, 0 );
+app.locals.PlaylistDesignerTimeout = setTimeout( function ( ) { app.locals.PlaylistDesigner( app, db, player ); }, 0 );
 
 //app.use( favicon( path.join( __dirname, 'public', 'favicon.ico' ) ) );
 app.use( bodyParser.json() );
