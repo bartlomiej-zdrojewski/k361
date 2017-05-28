@@ -318,7 +318,7 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                 };
 
-            $scope.Playlist.push(Element); }
+            $scope.Playlist.push( Element ); }
 
         if ( $scope.Playlist[0].begin > Begin.getTime() ) {
 
@@ -331,7 +331,7 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                 };
 
-            $scope.Playlist.unshift(Element); }
+            $scope.Playlist.unshift( Element ); }
 
         if ( $scope.Playlist[ $scope.Playlist.length - 1 ].end < End.getTime() ) {
 
@@ -343,11 +343,11 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                 };
 
-            $scope.Playlist.push(Element); }
+            $scope.Playlist.push( Element ); }
 
         for ( var i = 1; i < $scope.Playlist.length; i++ ) {
 
-            if ( $scope.Playlist[ i - 1 ].end != $scope.Playlist[i].begin ) {
+            if ( $scope.Playlist[ i - 1 ].end != $scope.Playlist[i].begin && ( $scope.Playlist[i].begin - $scope.Playlist[ i - 1 ].end ) >= 1000 ) {
 
                 var Element = {
 

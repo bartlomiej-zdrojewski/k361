@@ -461,6 +461,8 @@ router.get( '/clean', function( req, res ) {
 
     console.log('Cleaning library');
 
+    /*
+
     for ( var i = 0; i < Catalog.obj.tracks.length; i++ ) {
 
         var Track = db.sread( 'LIB-TRACK-' + Catalog.obj.tracks[i] );
@@ -486,6 +488,8 @@ router.get( '/clean', function( req, res ) {
             Catalog.obj.tracks.splice( i, 1 ); } }
 
     db.swrite( 'LIB-CATALOG', Catalog.obj );
+
+    */
 
     res.sendStatus(200);
 

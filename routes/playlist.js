@@ -295,7 +295,7 @@ router.post( '/swap', function( req, res ) { // { first: STRING, second: STRING 
 
         res.status(400).send('Playlist schedule entries are not located next to each other.'); return; }
 
-    if ( Schedule.obj.schedule[a].end != Schedule.obj.schedule[b].begin ) {
+    if ( Schedule.obj.schedule[a].end != Schedule.obj.schedule[b].begin && ( Schedule.obj.schedule[b].begin - Schedule.obj.schedule[a].end ) >= 1000 ) {
 
         res.status(400).send('Playlist schedule entries are not connected.'); return; }
 
