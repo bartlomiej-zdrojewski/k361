@@ -256,13 +256,15 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
             Begin = new Date( $scope.PlaylistControls.Values.year, $scope.PlaylistControls.Values.month, $scope.PlaylistControls.Values.day, 17, 0, 0 );
             End = new Date( $scope.PlaylistControls.Values.year, $scope.PlaylistControls.Values.month, $scope.PlaylistControls.Values.day, 24, 0, 0 ); }
 
+        /*
+
+        // TODO: TEST ->
+
         var ScheduleLeft = 0;
         var ScheduleRight = $scope.Schedule.length - 1;
 
         var a = ScheduleRight;
         var b = ScheduleLeft;
-
-        // TODO: TEST ->
 
         while ( a > ScheduleLeft ) {
 
@@ -288,9 +290,19 @@ angular.module('k361', [ 'ngMaterial', 'ngMessages', 'ngAnimate', 'ngAria' ] ).c
 
                 b = m + 1; } }
 
-        // TODO: -> TEST
-
         for ( var i = ScheduleLeft; i <= ScheduleRight; i++ ) {
+
+            if ( $scope.Schedule[i].end < Begin.getTime() || $scope.Schedule[i].begin > End.getTime() ) {
+
+                continue; }
+
+            $scope.PlaylistControls.Schedule.push( $scope.Schedule[i] ); }
+
+         // TODO: -> TEST
+
+        */
+
+        for ( var i = 0; i < $scope.Schedule.length; i++ ) { // TODO: CHANGE WITH UPPER CODE
 
             if ( $scope.Schedule[i].end < Begin.getTime() || $scope.Schedule[i].begin > End.getTime() ) {
 
