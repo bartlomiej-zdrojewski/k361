@@ -292,7 +292,7 @@ router.get( '/reset', function( req, res ) {
                         250 ); } } } }
 
     db.reset();
-    req.app.locals.PlaylistManager( req.app, db );
+    req.app.locals.PlaylistManager( req.app, db, player );
 
     res.sendStatus(200);
 

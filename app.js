@@ -222,7 +222,7 @@ app.locals.PlaylistDesigner = function ( app, db, player ) {
 
     if ( !Settings.valid ) {
 
-        app.locals.PlaylistDesignerTimeout = setTimeout( function ( ) { app.locals.PlaylistDesigner( app, db ); }, 1000 );
+        app.locals.PlaylistDesignerTimeout = setTimeout( function ( ) { app.locals.PlaylistDesigner( app, db, player ); }, 1000 );
 
         return; }
 
@@ -247,7 +247,7 @@ app.locals.PlaylistDesigner = function ( app, db, player ) {
 
         TimeoutDelay = TimeoutDelay + 86400000; }
 
-    app.locals.PlaylistDesignerTimeout = setTimeout( function ( ) { app.locals.PlaylistDesigner( app, db ); }, TimeoutDelay );
+    app.locals.PlaylistDesignerTimeout = setTimeout( function ( ) { app.locals.PlaylistDesigner( app, db, player ); }, TimeoutDelay );
 
     var Tracks = [];
 
@@ -490,10 +490,6 @@ app.locals.PlaylistDesigner = function ( app, db, player ) {
 
             var Midnight = new Date();
             Midnight.setHours( 0, 0, 0 );
-
-            console.log(Tracks[Next].title);
-            console.log(Begin);
-            console.log(End);
 
             Begin = Midnight.getTime() + Begin * 1000;
             End = Midnight.getTime() + End * 1000;
