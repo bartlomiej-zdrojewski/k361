@@ -255,7 +255,7 @@ app.locals.PlaylistDesigner = function ( app, db, player ) {
 
         var Track = db.sread( 'LIB-TRACK-' + Catalog.obj.tracks[i] );
 
-        if ( Track.valid ) {
+        if ( Track.valid && Track.obj.state == 'READY' ) {
 
             Tracks.push( Track.obj ); } }
 

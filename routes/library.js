@@ -461,7 +461,7 @@ router.get( '/clean', function( req, res ) {
 
     console.log('Cleaning library');
 
-    /*
+
 
     for ( var i = 0; i < Catalog.obj.tracks.length; i++ ) {
 
@@ -469,27 +469,35 @@ router.get( '/clean', function( req, res ) {
 
         if ( Track.valid ) {
 
-            if ( Track.obj.state === 'ERROR' || Track.obj.state === 'REMOVED' ) {
+            if ( Track.obj.state == 'ERROR' || Track.obj.state == 'REMOVED' ) {
 
-                fs.unlink( 'tracks/' + Track.obj.path , function ( err ) {
+                if ( fs.existsSync( 'tracks/' + Track.obj.path ) && Track.obj.path != '' ) {
 
-                    if ( err ) {
+                    fs.unlink( 'tracks/' + Track.obj.path, function ( err ) {
 
-                        console.log( 'While deleting file \'tracks/' + Track.obj.path + '\' an error occurred: ' + err ); }
+                        if ( err ) {
 
-                    } );
+                            console.log( 'While deleting file \'tracks/' + Track.obj.path + '\' an error occurred: ' + err ); }
 
-                db.sremove( 'LIB-TRACK-' + Track.obj.id ); // TODO: TEST AND FIX
+                        } ); }
 
-                Catalog.obj.tracks.splice( i, 1 ); } }
+                // db.sremove( 'LIB-TRACK-' + Track.obj.id ); // TODO: THIS FUNCTION DAMAGES THE DATABASE - FIX IT
+
+                Catalog.obj.timestamp = Date.now();
+                // Catalog.obj.tracks.splice( i, 1 ); // TODO: UNCOMMENT WHEN UPPER BUG WILL BE FIXED
+
+                /* i--; */ } } // TODO: UNCOMMENT WHEN UPPER BUG WILL BE FIXED
 
         else {
 
-            Catalog.obj.tracks.splice( i, 1 ); } }
+            Catalog.obj.timestamp = Date.now();
+            Catalog.obj.tracks.splice( i, 1 );
+
+            i--; } }
 
     db.swrite( 'LIB-CATALOG', Catalog.obj );
 
-    */
+
 
     res.sendStatus(200);
 

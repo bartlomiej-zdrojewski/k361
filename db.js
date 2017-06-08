@@ -65,7 +65,7 @@ db.read = function ( mem, id, json_friendly ) { // TODO: CHANGE LINEAR SEARCH TO
 
     for ( var i = 0; i < mem.length; i++ ) {
 
-        if ( mem[i].id === id ) {
+        if ( mem[i].id == id ) {
 
             if ( typeof( json_friendly ) != 'boolean' ) {
 
@@ -99,7 +99,7 @@ db.write = function ( mem, id, obj, json_friendly ) { // TODO: CHANGE LINEAR SEA
 
     for ( var i = 0; i < mem.length; i++ ) {
 
-        if ( mem[i].id === id ) {
+        if ( mem[i].id == id ) {
 
             if ( typeof( json_friendly ) != 'boolean' ) {
 
@@ -131,7 +131,7 @@ db.remove = function ( mem, id ) { // TODO: CHANGE LINEAR SEARCH TO BINARY SEARC
 
     for ( var i = 0; i < mem.length; i++ ) {
 
-        if ( mem[i].id === id ) {
+        if ( mem[i].id == id ) {
 
             mem.splice( i, 1 );
 
@@ -189,7 +189,7 @@ db.sremove = function ( id, callback ) {
 
         if ( err ) {
 
-            console.log( 'While writing to database an error occurred: ' + err ); }
+            console.log( 'While removing from database an error occurred: ' + err ); }
 
         if ( callback !== undefined ) {
 

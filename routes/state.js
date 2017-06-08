@@ -277,19 +277,15 @@ router.get( '/reset', function( req, res ) {
 
             if ( Track.valid ) {
 
-                if ( fs.existsSync( 'tracks/' + Track.obj.path ) ) {
+                if ( fs.existsSync( 'tracks/' + Track.obj.path ) && Track.obj.path != '' ) {
 
-                    setTimeout( function ( ) {
+                    fs.unlink( 'tracks/' + Track.obj.path, function ( err ) {
 
-                            fs.unlink( 'tracks/' + Track.obj.path , function ( err ) {
+                        if ( err ) {
 
-                                if ( err ) {
+                            console.log( 'While deleting file \'tracks/' + Track.obj.path + '\' an error occurred: ' + err ); }
 
-                                    console.log( 'While deleting file \'tracks/' + Track.obj.path + '\' an error occurred: ' + err ); }
-
-                            } ) },
-
-                        250 ); } } } }
+                        } ); } } } }
 
     db.reset();
     req.app.locals.PlaylistManager( req.app, db, player );
